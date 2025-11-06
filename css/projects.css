@@ -209,9 +209,9 @@
     transition: background-color 0.2s;
 }
 
-.create-icon {
-    font-size: 2.5em;
-    color: #5B3FFF;
+.create-icon-svg {
+    width: 40px; 
+    height: 40px; 
     margin-bottom: 5px;
 }
 
