@@ -1,200 +1,388 @@
-
 .center-container {
+
    min-height: 100vh;
+
     display: flex;
-    justify-content: center; 
+
+    justify-content: center;
+
     align-items: center;
+
 }
+
+
 
 .profile-form {
-    max-width: 840px; 
-  
+
+    max-width: 840px;
+
+ 
+
     background-color: white;
+
     padding: 40px;
+
     border-radius: 12px;
+
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    margin: 60px auto; 
+
+    margin: 60px auto;
+
 }
+
+
 
 .form-header {
-    text-align: left; 
+
+    text-align: left;
+
 }
+
+
 
 .form-header h1 {
-    font-size: 2rem; 
+
+    font-size: 2rem;
+
     font-weight: 700;
-    color: #333333; 
+
+    color: #333333;
+
     margin: 0 0 10px 0;
+
     text-align: left;
+
 }
+
+
 
 .blue-separator {
+
     display: block;
+
     border: none;
+
     height: 2px;
+
     background-color: #5B3FFF;
+
     width: 100%;
+
     margin-bottom: 20px;
+
 }
+
+
 
 .subtitle {
+
     font-style: italic;
+
     color: #555555;
+
     margin: 0 0 30px 0;
+
     padding-bottom: 0;
+
     border-bottom: none;
+
     text-align: left;
+
 }
+
+
 
 .form-section {
-    margin-bottom: 30px; 
-    padding: 25px 35px; 
-    border-radius: 10px; 
-    border: 1px solid rgba(0, 0, 0, 0.08); 
+
+    margin-bottom: 30px;
+
+    padding: 25px 35px;
+
+    border-radius: 10px;
+
+    border: 1px solid rgba(0, 0, 0, 0.08);
+
 }
+
+
 
 .account-info {
+
     background-color: #f0f3fe;
+
 }
+
+
 
 .security-settings {
+
     background-color: #fef0f0;
+
 }
+
+
 
 .notification-prefs {
+
     background-color: #e0f8e9;
+
 }
+
+
 
 .form-section h2 {
+
     font-size: 1.35rem;
+
     font-weight: 600;
+
     color: #333333;
+
     margin-bottom: 25px;
+
 }
+
+
 
 .input-group {
+
     display: flex;
-    align-items: center; 
+
+    align-items: center;
+
     margin-bottom: 20px;
+
 }
+
+
 
 .input-group label {
+
     flex-basis: 30%;
+
     font-weight: 500;
+
     color: #444444;
+
     padding-right: 20px;
+
     flex-shrink: 0;
+
 }
+
+
 
 .input-group input[type="text"],
+
 .input-group input[type="email"],
+
 .input-group input[type="number"],
+
 .input-group input[type="password"],
+
 .input-group select {
-    flex-grow: 1; 
+
+    flex-grow: 1;
+
     padding: 12px 15px;
+
     border: 1px solid #cccccc;
+
     border-radius: 8px;
+
     font-family: inherit;
+
     font-size: 1em;
+
     min-width: 0;
+
 }
+
+
 
 .input-group input:focus,
+
 .input-group select:focus {
+
     border-color: #5B3FFF;
+
     outline: none;
+
     box-shadow: 0 0 0 3px rgba(91, 63, 255, 0.25);
+
 }
+
+
 
 .password-info-note {
+
     font-size: 0.85em;
+
     color: #777;
-    margin: -10px 0 20px 0; 
+
+    margin: -10px 0 20px 0;
+
     padding-left: 30%;
+
     text-align: left;
+
 }
+
+
 
 .checkbox-group {
+
     display: flex;
+
     align-items: center;
+
     margin-bottom: 20px;
+
     padding-left: 30%;
+
 }
+
+
 
 .checkbox-group input[type="checkbox"] {
+
     width: 18px;
+
     height: 18px;
+
     margin-right: 10px;
+
     cursor: pointer;
+
 }
+
+
 
 .radio-group .radio-options {
+
     display: flex;
-    gap: 25px; 
+
+    gap: 25px;
+
     flex-grow: 1;
+
 }
+
+
 
 .radio-option {
+
     display: flex;
+
     align-items: center;
+
     cursor: pointer;
+
 }
+
+
 
 .dropdown-group select {
-    appearance: none; 
+
+    appearance: none;
+
     background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23555'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
+
     background-repeat: no-repeat;
+
     background-position: right 10px top 50%;
+
     background-size: 18px;
-    padding-right: 35px; 
+
+    padding-right: 35px;
+
 }
+
+
 
 .button-container {
+
     padding-top: 30px;
+
     text-align: right;
-    border-top: 1px solid #eeeeee; 
+
+    border-top: 1px solid #eeeeee;
+
     margin-top: 15px;
+
 }
+
+
 
 .save-btn {
-    background-color: #5B3FFF; 
+
+    background-color: #5B3FFF;
+
     color: white;
+
     border: none;
-    padding: 14px 35px; 
-    border-radius: 8px; 
+
+    padding: 14px 35px;
+
+    border-radius: 8px;
+
     cursor: pointer;
+
     font-weight: 600;
+
     font-size: 1.05em;
+
     transition: background-color 0.2s;
-    width: auto; 
+
+    width: auto;
+
     display: inline-block;
+
 }
+
+
 
 .save-btn:hover {
-    background-color: #442ce0; 
+
+    background-color: #442ce0;
+
 }
 
+
+
 @media (max-width: 750px) {
-    
+
+   
+
     /* Smanji padding na body-u za male ekrane (opcionalno) */
+
     body {
-        padding: 15px; 
+
+        padding: 15px;
+
     }
-    
+
+   
+
     /* Smanji unutrašnji padding forme za male ekrane */
+
     .forma {
+
         padding: 20px 15px;
     }
+
     
-    /* Osigurajte da labele idu u svoju liniju (defaultno je tako, ali za sigurnost) */
     .input-gr label {
+
         text-align: left;
         padding-right: 0;
+
     }
-    
-    /* Ovdje možete dodati i dugme 100% širine ako želite */
+
+
     .dugme {
         width: 100%;
     }
+
 }
+
