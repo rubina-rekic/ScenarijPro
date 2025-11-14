@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Korisnički Profil - ScenarijPro</title>
+
+    <link rel="stylesheet" href="../css/zajednicki.css">
+    <link rel="stylesheet" href="../css/user.css">
+</head>
+<body>
+
+    <div class="center-container">
+        <form class="profile-form">
+            
+            <header class="form-header">
+                <h1>Postavke korisničkog računa</h1>
+                <hr class="blue-separator">
+                <p class="subtitle">Upravljajte vašim korisničkim računom, sigurnosnim postavkama i notifikacijama</p>
+            </header>
+
+            <section class="form-section account-info">
+                <h2>Podaci o korisničkom računu</h2>
+                
+                <div class="input-group">
+                    <label for="ime_prezime">Ime i prezime</label>
+                    <input type="text" id="ime_prezime" name="ime_prezime" placeholder="Rubina Rekic">
+                </div>
+                
+                <div class="input-group">
+                    <label for="email_adresa">Email adresa</label>
+                    <input type="email" id="email_adresa" name="email_adresa" placeholder="rrekic1@etf.unsa.ba">
+                </div>
+                
+                <div class="input-group">
+                    <label for="broj_elemenata">Broj elemenata po stranici</label>
+                    <input type="number" id="broj_elemenata" name="broj_elemenata" min="1" max="100" placeholder="1 do 100" value="10">
+                </div>
+            </section>
+
+            <section class="form-section security-settings">
+                <h2>Sigurnosne postavke</h2>
+
+                <div class="input-group">
+                    <label for="nova_sifra">Nova šifra</label>
+                    <input type="password" id="nova_sifra" name="nova_sifra" placeholder="*****">
+                </div>
+                
+                <p class="password-info-note">Ostavite prazno za zadržavanje postojeće šifre.</p>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="two_factor" name="two_factor">
+                    <label for="two_factor">Omogući Two-Factor Authentication (2FA)</label>
+                </div>
+            </section>
+            
+            <section class="form-section notification-prefs">
+                <h2>Notifikacije</h2>
+
+                <div class="input-group radio-group">
+                    <label>Preferirani način komunikacije</label>
+                    <div class="radio-options">
+                        <label class="radio-option">
+                            <input type="radio" name="komunikacija" value="email" checked> Email
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="komunikacija" value="sms"> SMS
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="komunikacija" value="none"> None
+                        </label>
+                    </div>
+                </div>
+
+                <div class="input-group dropdown-group">
+                    <label for="frequency">Notification frequency</label>
+                    <select id="frequency" name="frequency">
+                        <option value="daily" selected>Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="never">Never</option>
+                    </select>
+                </div>
+            </section>
+            
+            <div class="button-container">
+                <button type="submit" class="save-btn">Spasi promjene</button>
+            </div>
+
+        </form>
+    </div>
+
+</body>
+</html>

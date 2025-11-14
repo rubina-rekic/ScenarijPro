@@ -1,5 +1,5 @@
 #app-container {
-    display: flex; /* Flexbox za raspored pored sebe */
+    display: flex; 
     min-height: 100vh;
 }
 
@@ -8,7 +8,6 @@
     background-color: #f8f9fb; /* Svijetlosiva pozadina */
     padding: 20px;
     box-sizing: border-box; 
-    flex-shrink: 0; 
 }
 
 #main-content {
@@ -19,7 +18,7 @@
 /* za sidebar elemente*/
 
 .app-title {
-    color: #5B3FFF; /* Nijansa plave za naslov */
+    color: #5B3FFF; /* Naslov- teskt u nijansi plavy*/
     font-size: 1.5em;
     font-weight: 700;
     margin-bottom: 30px;
@@ -30,9 +29,17 @@
     padding: 0;
     margin: 0 0 20px 0;
 }
+.nav-icon {
+    width: 18px; /* Standardna veličina ikonice */
+    height: 18px;
+   fill: #333; /* Defaultna boja (tamno siva) */
+    transition: fill 0.15s;
+}
 
 .nav-item a {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 10px;
     padding: 10px 15px;
     text-decoration: none;
     color: #333;
@@ -137,11 +144,11 @@
 }
 
 .project-card {
-    background: white;
-    border: 1px solid #e0e0e0;
-    padding: 20px;
-    border-radius: 8px; 
-    transition: box-shadow 0.2s ease; 
+    background-color: #f8f9fb;
+    padding: 1.5rem;
+    border-radius: 12px;
+    position: relative;
+    transition: box-shadow 0.2s;
 }
 
 .project-card h2 {
@@ -157,6 +164,25 @@
     font-size: 0.9em;
     margin-bottom: 15px;
 }
+
+ 
+.project-card.active {
+    border-left: 4px solid #5B3FFF;
+    background-color: #ffffff;
+}
+
+.active-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background-color:  #a1a9dc;
+    color: #2b0fc9;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
 
 /* Formatiranje teksta: Bold labela, normalan tekst iza */
 .project-card p {
@@ -180,11 +206,6 @@
     cursor: pointer;
 }
 
-/* Kartica "Aktivan" */
-.project-card.active {
-    border-left: 4px solid #5B3FFF; /* Plava traka */
-    background-color: #eef0ff; /* Svijetla pozadina */
-}
 
 /* Hover na dugmetu (+ Novi projekat) */
 .new-project-btn:hover {
@@ -194,6 +215,11 @@
 /* prelaskom misa po elementima navigacijske trake*/
 .nav-item:not(.active) a:hover {
     background-color: #d6daec; 
+}
+
+.create-new:hover {
+   border-color: #6e61b7;
+    background-color: #f9f9f9;
 }
 
 
@@ -215,16 +241,10 @@
     margin-bottom: 5px;
 }
 
-/* RESPONSIVNOST zAHTJEV
---treba li ovo uopste??
-
-   'Aplikacija mora imati responzivan dizajn, odnosno mora biti prilagodljiva 
-   za prikaz na manjim uređajima (mobilnim telefonima) i tabletima. 
-   Izgled elemenata mora biti intuitivan za korištenje na svim uređajima.' */
 @media (max-width: 750px) {
     
     #app-container {
-        flex-direction: column; /* Sidebar ide iznad sadržaja */
+        flex-direction: column; /* Sidebar ide iznad sadržaja*/
     }
     
     #sidebar {
@@ -232,6 +252,11 @@
         padding: 15px 20px;
     }
     
+    #main-content {
+        padding: 20px; /* Smanjimo padding na manjim ekranima */
+    }
+    
+    /*  Vertikalno slaganje pretrage i dugmeta */
     .content-header {
         flex-direction: column;
         align-items: flex-start;
@@ -240,19 +265,25 @@
 
     .header-actions {
         width: 100%;
-        justify-content: space-between;
+        flex-direction: column; 
+        gap: 10px;
+        justify-content: flex-start;
     }
     
     .search-input {
-        flex-grow: 1;
-        margin-right: 10px;
+        /*  Pretraga da zauzme punu širinu */
+        width: 100%; 
+        box-sizing: border-box; 
+        margin-right: 0; 
+        flex-grow: 0; 
     }
     
     .new-project-btn {
-        width: 150px; 
+        /* dugme da zauzme punu širinu */
+        width: 100%; 
     }
 
-    /* Grid - 1 kolona na mobilnim uređajima */
+    /* Grid - 1 kolona na mobilnim uređajima  */
     .project-grid {
         grid-template-columns: 1fr; 
     }
