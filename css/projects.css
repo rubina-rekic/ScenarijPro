@@ -15,7 +15,6 @@
     padding: 30px; 
 }
 
-/* za sidebar elemente*/
 
 .app-title {
     color: #5B3FFF; /* Naslov- teskt u nijansi plavy*/
@@ -287,4 +286,5 @@
     .project-grid {
         grid-template-columns: 1fr; 
     }
+
 }

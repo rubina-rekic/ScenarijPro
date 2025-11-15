@@ -1,5 +1,4 @@
 .center-container {
-
    min-height: 100vh;
 
     display: flex;
@@ -7,16 +6,12 @@
     justify-content: center;
 
     align-items: center;
-
 }
 
 
 
 .profile-form {
-
     max-width: 840px;
-
- 
 
     background-color: white;
 
@@ -27,7 +22,6 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 
     margin: 60px auto;
-
 }
 
 
@@ -352,37 +346,40 @@
 
 @media (max-width: 750px) {
 
-   
-
-    /* Smanji padding na body-u za male ekrane (opcionalno) */
-
-    body {
-
-        padding: 15px;
-
+    .profile-form {
+        padding: 20px;
+        margin: 20px;
     }
 
-   
-
-    /* Smanji unutrašnji padding forme za male ekrane */
-
-    .forma {
-
-        padding: 20px 15px;
+    .form-section {
+        padding: 20px;
     }
 
-    
-    .input-gr label {
+    .input-group {
+        flex-direction: column;   /* više nije u jednom redu */
+        align-items: flex-start;  /* sve ide lijevo */
+    }
 
-        text-align: left;
+    .input-group label {
+        flex-basis: auto;        /* makni onih 30% */
         padding-right: 0;
-
+        margin-bottom: 8px;
     }
 
-
-    .dugme {
-        width: 100%;
+    .password-info-note,
+    .checkbox-group {
+        padding-left: 0;         /* ukloni pomjeranje udesno */
     }
 
+    .button-container {
+        text-align: center;      /* dugme centrirano */
+    }
+
+    .save-btn {
+        width: 100%;             /* dugme preko cijele širine */
+    }
 }
 
+body {
+    min-width: 280px;
+}
