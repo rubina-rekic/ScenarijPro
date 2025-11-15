@@ -1,3 +1,11 @@
+body {
+
+    font-family: "Poppins", "Inter", sans-serif;
+
+    background-color: #f5f6fa;
+
+}
+
 .center-container {
    min-height: 100vh;
 
