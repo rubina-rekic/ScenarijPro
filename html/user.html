@@ -24,17 +24,17 @@
                 
                 <div class="input-group">
                     <label for="ime_prezime">Ime i prezime</label>
-                    <input type="text" id="ime_prezime" name="ime_prezime" placeholder="Rubina Rekic">
+                    <input type="text" id="ime_prezime" name="ime_prezime" placeholder="Ime i prezime">
                 </div>
                 
                 <div class="input-group">
                     <label for="email_adresa">Email adresa</label>
-                    <input type="email" id="email_adresa" name="email_adresa" placeholder="rrekic1@etf.unsa.ba">
+                    <input type="email" id="email_adresa" name="email_adresa" placeholder="Email adresa">
                 </div>
                 
                 <div class="input-group">
                     <label for="broj_elemenata">Broj elemenata po stranici</label>
-                    <input type="number" id="broj_elemenata" name="broj_elemenata" min="1" max="100" placeholder="1 do 100" value="10">
+                    <input type="number" id="broj_elemenata" name="broj_elemenata" min="1" max="100" placeholder="Broj elemenata po stranici">
                 </div>
             </section>
 
@@ -43,7 +43,7 @@
 
                 <div class="input-group">
                     <label for="nova_sifra">Nova šifra</label>
-                    <input type="password" id="nova_sifra" name="nova_sifra" placeholder="*****">
+                    <input type="password" id="nova_sifra" name="nova_sifra" placeholder="Nova šifra">
                 </div>
                 
                 <p class="password-info-note">Ostavite prazno za zadržavanje postojeće šifre.</p>
@@ -75,7 +75,8 @@
                 <div class="input-group dropdown-group">
                     <label for="frequency">Notification frequency</label>
                     <select id="frequency" name="frequency">
-                        <option value="daily" selected>Daily</option>
+                        <option value="" disabled selected>Notification frequency</option>
+                        <option value="daily">Daily</option>
                         <option value="weekly">Weekly</option>
                         <option value="monthly">Monthly</option>
                         <option value="never">Never</option>

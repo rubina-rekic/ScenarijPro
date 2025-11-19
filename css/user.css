@@ -391,3 +391,31 @@ body {
 body {
     min-width: 280px;
 }
+
+
+@media (max-width: 500px) {
+    
+    .profile-form .security-settings,
+    .profile-form .notification-prefs {
+        display: none;
+    }
+
+    .profile-form .input-group > label {
+        display: none;
+    }
+
+    .profile-form .input-group input,
+    .profile-form .input-group select,
+    .profile-form .input-group textarea {
+        width: 100%;
+        font-size: 1rem;
+        padding: 0.5rem;
+    }
+
+    .profile-form input::placeholder,
+    .profile-form textarea::placeholder {
+        color: #a0a0a0;
+        opacity: 1;
+    }
+}
+
