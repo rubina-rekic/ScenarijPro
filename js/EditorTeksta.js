@@ -148,59 +148,79 @@ let EditorTeksta = function (divRef) {
     };
 
     // --- METODE ---
-
     let dajBrojRijeci = function () {
-        
-        const text = editorDiv.innerText || "";
-        const allWords = text.split(WORD_SPLIT_REGEX); 
+    const text = editorDiv.innerText || "";
+    const allWords = text.split(WORD_SPLIT_REGEX);
+    // 1. Ukupan broj riječi (ovo ti je već bilo dobro)
+    const ukupno = allWords.filter(w => VALID_WORD_CHECK.test(w) && !/^\d+$/.test(w)).length;
 
-        const ukupno = allWords.filter(w => VALID_WORD_CHECK.test(w) && !/^\d+$/.test(w)).length;
+    let boldiranih = 0;
+    let italic = 0;
 
-        let boldiranih = 0;
-        let italic = 0;
+    const walker = document.createTreeWalker(editorDiv, NodeFilter.SHOW_TEXT, null, false);
+    let node;
 
-        
-        const walker = document.createTreeWalker(editorDiv, NodeFilter.SHOW_TEXT, null, false);
-        let node;
+    while (node = walker.nextNode()) {
+        const nodeText = node.nodeValue;
+        if (!nodeText.trim()) continue; // Preskoči prazne
 
-        while (node = walker.nextNode()) {
-            const nodeText = node.nodeValue;
-            if (!nodeText.trim()) continue;
+        // Provjera stila roditelja
+        let parent = node.parentElement;
+        let isBold = false;
+        let isItalic = false;
 
-       
-            let parent = node.parentElement;
-            let isBold = false;
-            let isItalic = false;
-
-            while (parent && parent !== editorDiv) {
-                const style = window.getComputedStyle(parent);
-                const fw = style.fontWeight;
-                const fs = style.fontStyle;
-
-              
-                if (fw === 'bold' || fw === 'bolder' || parseInt(fw) >= 700) isBold = true;
-                if (fs === 'italic') isItalic = true;
-                parent = parent.parentElement;
-            }
-
-            if (!isBold && !isItalic) continue;
-
-            const wordsInNode = nodeText.split(WORD_SPLIT_REGEX);
-            for (let w of wordsInNode) {
-               
-                if (VALID_WORD_CHECK.test(w) && !/^\d+$/.test(w)) {
-                    if (isBold) boldiranih++;
-                    if (isItalic) italic++;
-                }
-            }
+        while (parent && parent !== editorDiv) {
+            const style = window.getComputedStyle(parent);
+            const fw = style.fontWeight;
+            const fs = style.fontStyle;
+            if (fw === 'bold' || fw === 'bolder' || parseInt(fw) >= 700) isBold = true;
+            if (fs === 'italic') isItalic = true;
+            parent = parent.parentElement;
         }
 
-        
-        if (boldiranih > ukupno) boldiranih = ukupno;
-        if (italic > ukupno) italic = ukupno;
+        if (!isBold && !isItalic) continue;
 
-        return { ukupno, boldiranih, italic };
-    };
+        
+        let isStartBroken = false;
+        let isEndBroken = false;
+
+        if (VALID_WORD_CHECK.test(nodeText.charAt(0))) {
+             let prev = node.previousSibling;
+             while(prev && prev.nodeType !== 3) prev = prev.previousSibling; // Nađi prethodni text node
+             if (prev && VALID_WORD_CHECK.test(prev.nodeValue.slice(-1))) {
+                 isStartBroken = true;
+             }
+        }
+
+        if (VALID_WORD_CHECK.test(nodeText.slice(-1))) {
+             let next = node.nextSibling;
+             while(next && next.nodeType !== 3) next = next.nextSibling; // Nađi sljedeći text node
+             if (next && VALID_WORD_CHECK.test(next.nodeValue.charAt(0))) {
+                 isEndBroken = true;
+             }
+        }
+
+        const wordsInNode = nodeText.split(WORD_SPLIT_REGEX);
+        
+        for (let k = 0; k < wordsInNode.length; k++) {
+            let w = wordsInNode[k];
+            if (VALID_WORD_CHECK.test(w) && !/^\d+$/.test(w)) {
+                if (k === 0 && isStartBroken) continue;
+                
+                if (k === wordsInNode.length - 1 && isEndBroken) continue;
+
+                if (isBold) boldiranih++;
+                if (isItalic) italic++;
+            }
+        }
+    }
+
+    // Sigurnosna provjera (zbir ne smije preći ukupno)
+    if (boldiranih > ukupno) boldiranih = ukupno;
+    if (italic > ukupno) italic = ukupno;
+
+    return { ukupno, boldiranih, italic };
+};
 
     let dajUloge = function () {
         const structure = parseScenarioStructure();
@@ -288,69 +308,96 @@ let EditorTeksta = function (divRef) {
     };
 
     let scenarijUloge = function (uloga) {
-        const structure = parseScenarioStructure();
-        const result = [];
-        const targetRole = uloga; // Pretpostavka: parser već vraća uloge onako kako su napisane
+    const structure = parseScenarioStructure();
+    const result = [];
+    const targetRole = uloga.toUpperCase(); // Case-insensitive poređenje
 
-
-        let allBlocks = [];
-        structure.forEach(scene => {
-            scene.dialogueSegments.forEach(segment => {
-                segment.blocks.forEach(block => {
-                    allBlocks.push({
-                        ...block,
-                        sceneObj: scene
-                    });
+    // 1. Skupi sve blokove u jedan ravni niz
+    let allBlocks = [];
+    structure.forEach(scene => {
+        scene.dialogueSegments.forEach(segment => {
+            segment.blocks.forEach(block => {
+                allBlocks.push({
+                    ...block,
+                    sceneObj: scene
                 });
             });
         });
+    });
 
-        for (let i = 0; i < allBlocks.length; i++) {
-            const curr = allBlocks[i];
-
-            if (curr.role.toUpperCase() === targetRole.toUpperCase()) {
-
-                let prevObj = null;
-                let nextObj = null;
-
-                // PRETHODNI
-                if (i > 0) {
-                    const prev = allBlocks[i - 1];
-
-                    if (prev.sceneTitle === curr.sceneTitle && prev.segmentId === curr.segmentId) {
-                        prevObj = {
-                            uloga: prev.role,
-                            linije: prev.replica
-                        };
-                    }
-                }
-
-
-                if (i < allBlocks.length - 1) {
-                    const next = allBlocks[i + 1];
-
-                    if (next.sceneTitle === curr.sceneTitle && next.segmentId === curr.segmentId) {
-                        nextObj = {
-                            uloga: next.role,
-                            linije: next.replica
-                        };
-                    }
-                }
-
-                result.push({
-                    scena: curr.sceneTitle || "Nepoznata scena", // ili null ako je implicitna
-                    pozicijaUTekstu: curr.replicaIndex,
-                    prethodni: prevObj,
-                    trenutni: {
-                        uloga: curr.role,
-                        linije: curr.replica
-                    },
-                    sljedeci: nextObj
-                });
+    // 2. SPOJI UZASTOPNE REPLIKE ISTE ULOGE
+    // (Ovo je dio koji ti je nedostajao)
+    let mergedBlocks = [];
+    if (allBlocks.length > 0) {
+        let currentMerge = allBlocks[0];
+        for (let i = 1; i < allBlocks.length; i++) {
+            let next = allBlocks[i];
+            
+            // Uslovi za spajanje: Ista uloga, ista scena, isti segment dijaloga
+            if (next.role === currentMerge.role && 
+                next.sceneTitle === currentMerge.sceneTitle &&
+                next.segmentId === currentMerge.segmentId) {
+                
+                // Spoji tekst replike novim redom
+                currentMerge.replica += "\n" + next.replica;
+            } else {
+                // Gurni stari i postavi novi za praćenje
+                mergedBlocks.push(currentMerge);
+                currentMerge = next;
             }
         }
-        return result;
-    };
+        mergedBlocks.push(currentMerge); // Gurni zadnji
+    } else {
+        mergedBlocks = allBlocks;
+    }
+
+    // 3. Kreiraj traženi format iz MERGED niza
+    for (let i = 0; i < mergedBlocks.length; i++) {
+        const curr = mergedBlocks[i];
+
+        // Provjera da li je to tražena uloga
+        if (curr.role.toUpperCase() === targetRole) {
+
+            let prevObj = null;
+            let nextObj = null;
+
+            // PRETHODNI (Gledamo unutar mergedBlocks)
+            if (i > 0) {
+                const prev = mergedBlocks[i - 1];
+                // Mora biti ista scena i isti segment da bi bio dio dijaloga
+                if (prev.sceneTitle === curr.sceneTitle && prev.segmentId === curr.segmentId) {
+                    prevObj = {
+                        uloga: prev.role,
+                        linije: prev.replica
+                    };
+                }
+            }
+
+            // SLJEDEĆI
+            if (i < mergedBlocks.length - 1) {
+                const next = mergedBlocks[i + 1];
+                if (next.sceneTitle === curr.sceneTitle && next.segmentId === curr.segmentId) {
+                    nextObj = {
+                        uloga: next.role,
+                        linije: next.replica
+                    };
+                }
+            }
+
+            result.push({
+                scena: curr.sceneTitle || "SCENE 1", // Fallback ako nema naslova
+                pozicijaUTekstu: curr.replicaIndex, // Ostavljamo originalni indeks prvog bloka
+                prethodni: prevObj,
+                trenutni: {
+                    uloga: curr.role,
+                    linije: curr.replica
+                },
+                sljedeci: nextObj
+            });
+        }
+    }
+    return result;
+};
 
     let grupisiUloge = function () {
         const structure = parseScenarioStructure();
