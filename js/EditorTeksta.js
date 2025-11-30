@@ -9,34 +9,24 @@ let EditorTeksta = function (divRef) {
 
     const editorDiv = divRef;
 
-    // --- KONSTANTE I REGEX ---
-    // Riječ: slova, brojevi (u kontekstu riječi), crtice, apostrofi.
-    // Napomena: Zadatak kaže "Brojevi... ne smatraju se riječima".
-    const WORD_SPLIT_REGEX = /[\s\.,?!:;]+/g; 
-    
-    // Regex za validaciju same riječi (mora imati bar jedno slovo, ne smije biti čisti broj)
-    // Dozvoljava: "Word", "It's", "Jean-Luc". Ne dozvoljava: "123", "..."
-    const VALID_WORD_CHECK = /[a-zA-ZčćžšđČĆŽŠĐ]+/; 
+
+    const WORD_SPLIT_REGEX = /[\s\.,]+/g;
+
+
+    const VALID_WORD_CHECK = /[a-zA-ZčćžšđČĆŽŠĐ]+/;
 
     const EMPTY_LINE_REGEX = /^\s*$/;
     const SCENE_HEADING_REGEX = /^(INT\.|EXT\.)[\w\W]*\s-\s(DAY|NIGHT|AFTERNOON|MORNING|EVENING)\s*$/;
-    // Uloga: Samo velika slova i razmaci, mora imati bar jedno slovo.
+
     const ROLE_NAME_REGEX = /^(?=.*[A-ZČĆŽŠĐ])[A-ZČĆŽŠĐ\s]+$/;
     const PARENTHETICAL_LINE_REGEX = /^\s*\(.+\)\s*$/;
 
-    // --- INTERNI PARSER (Srce modula) ---
     const parseScenarioStructure = () => {
-        let content = editorDiv.innerHTML;
-        // Normalizacija novih redova
-        content = content.replace(/<br\s*\/?>/gi, '\n');
-        content = content.replace(/<\/div>/gi, '\n</div>');
-        content = content.replace(/<\/p>/gi, '\n</p>');
-        
-        
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = content;
-        const rawText = tempDiv.innerText || tempDiv.textContent; 
-        const lines = rawText.split('\n');
+
+        let text = editorDiv.innerText;
+
+        text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+        const lines = text.split('\n');
 
         const structure = [];
         let currentScene = {
@@ -71,16 +61,13 @@ let EditorTeksta = function (divRef) {
 
         for (let i = 0; i < lines.length; i++) {
             let line = lines[i].trim();
-            const originalLine = lines[i]; // Čuvamo original radi indentation ako treba, mada trimamo za logiku
 
-            if (EMPTY_LINE_REGEX.test(originalLine)) {
-                 continue;
-            }
+            // Preskoči prazne linije
+            if (EMPTY_LINE_REGEX.test(line)) continue;
 
-            
+            // 1. SCENA (Ovo ti je bilo dobro, ali dodajemo closeSegment)
             if (SCENE_HEADING_REGEX.test(line)) {
-                finishDialogueSegment();
-                // Nova scena
+                finishDialogueSegment(); // Bitno: scena prekida dijalog
                 currentScene = {
                     title: line,
                     roles: new Map(),
@@ -92,73 +79,67 @@ let EditorTeksta = function (divRef) {
                 continue;
             }
 
-            //  POTENCIJALNA ULOGA
+
             if (ROLE_NAME_REGEX.test(line)) {
-               let hasDialogue = false;
-                let j = i + 1;
-                let bufferLines = []; // Linije govora
 
-                while (j < lines.length) {
-                    const nextLine = lines[j];
-                    const nextTrim = nextLine.trim();
-                    
-                    if (SCENE_HEADING_REGEX.test(nextTrim)) break; // Nailazak na scenu prekida
-                    if (ROLE_NAME_REGEX.test(nextTrim)) break; 
-                    if (EMPTY_LINE_REGEX.test(nextLine)) {
-                        break; 
+                if (i + 1 < lines.length) {
+                    let nextLineRaw = lines[i + 1];
+
+                    if (EMPTY_LINE_REGEX.test(nextLineRaw)) {
+                        finishDialogueSegment(); // Ovo je onda akcija, prekida dijalog
+                        continue;
                     }
 
-                    // Ako nije prazna
-                    if (!PARENTHETICAL_LINE_REGEX.test(nextTrim)) {
-                        
-                        hasDialogue = true;
-                       
-                    }
-                    
-                    // Dodajemo u buffer (uključujući zagrade, jer su dio bloka, iako se ne računaju u govor)
-                    bufferLines.push(nextTrim);
-                    j++;
-                }
 
-                // Provjera validnosti uloge (mora postojati bar jedna linija koja nije zagrada)
-                const containsActualSpeech = bufferLines.some(l => !PARENTHETICAL_LINE_REGEX.test(l));
-
-                if (containsActualSpeech) {
-                    // JESTE ULOGA
-                    const roleName = line;
-                    
-                    if (!currentDialogueSegment) {
-                        startNewDialogueSegment();
+                    let nextTrim = nextLineRaw.trim();
+                    if (SCENE_HEADING_REGEX.test(nextTrim) || ROLE_NAME_REGEX.test(nextTrim)) {
+                        finishDialogueSegment();
+                        continue;
                     }
 
-                    replicaIndexInScene++;
-                    
-                   const cleanReplicaLines = bufferLines.filter(l => !PARENTHETICAL_LINE_REGEX.test(l));
+                    // Ako smo prošli provjere, skupljamo govor
+                    let bufferLines = [];
+                    let j = i + 1;
+                    while (j < lines.length) {
+                        let ln = lines[j].trim();
+                        // Prekidi bloka govora:
+                        if (EMPTY_LINE_REGEX.test(ln)) break; // Prazna linija prekida blok
+                        if (SCENE_HEADING_REGEX.test(ln)) break;
+                        if (ROLE_NAME_REGEX.test(ln)) break;
 
-                    const block = {
-                        role: roleName,
-                        replica: cleanReplicaLines.join('\n'), // Samo govor
-                        sceneTitle: currentScene.title,
-                        replicaIndex: replicaIndexInScene,
-                        segmentId: currentDialogueSegment.id
-                    };
-
-                    currentDialogueSegment.blocks.push(block);
-
-                    // Dodaj u mapu uloga za scenu
-                    if (!currentScene.roles.has(roleName)) {
-                        currentScene.roles.set(roleName, []);
+                        bufferLines.push(ln);
+                        j++;
                     }
-                    currentScene.roles.get(roleName).push(block);
 
-                    // Pomjeri glavni brojač 'i' za onoliko koliko smo linija 'pojeli'
-                    i = j - 1; 
-                    continue;
+                    // Provjera ima li govora koji nije u zagradi
+                    const cleanReplicaLines = bufferLines.filter(l => !PARENTHETICAL_LINE_REGEX.test(l));
+
+                    if (cleanReplicaLines.length > 0) {
+                        // USPJEŠNA ULOGA
+                        const roleName = line;
+                        if (!currentDialogueSegment) startNewDialogueSegment();
+
+                        replicaIndexInScene++;
+                        const block = {
+                            role: roleName,
+                            replica: cleanReplicaLines.join('\n'),
+                            sceneTitle: currentScene.title,
+                            replicaIndex: replicaIndexInScene,
+                            segmentId: currentDialogueSegment.id
+                        };
+
+                        currentDialogueSegment.blocks.push(block);
+                        if (!currentScene.roles.has(roleName)) currentScene.roles.set(roleName, []);
+                        currentScene.roles.get(roleName).push(block);
+
+                        i = j - 1;
+                        continue;
+                    }
                 }
             }
 
-             if (!PARENTHETICAL_LINE_REGEX.test(line)) {
-                // Ovo je akcija. Akcija prekida dijalog segment.
+
+            if (!PARENTHETICAL_LINE_REGEX.test(line)) {
                 finishDialogueSegment();
             }
         }
@@ -169,7 +150,12 @@ let EditorTeksta = function (divRef) {
     // --- METODE ---
 
     let dajBrojRijeci = function () {
-        let ukupno = 0;
+        
+        const text = editorDiv.innerText || "";
+        const allWords = text.split(WORD_SPLIT_REGEX); 
+
+        const ukupno = allWords.filter(w => VALID_WORD_CHECK.test(w) && !/^\d+$/.test(w)).length;
+
         let boldiranih = 0;
         let italic = 0;
 
@@ -178,65 +164,64 @@ let EditorTeksta = function (divRef) {
         let node;
 
         while (node = walker.nextNode()) {
-            const text = node.nodeValue;
-            if (!text.trim()) continue;
+            const nodeText = node.nodeValue;
+            if (!nodeText.trim()) continue;
 
-            // Provjera roditelja za stil
+       
             let parent = node.parentElement;
             let isBold = false;
             let isItalic = false;
-            
-            // Penjemo se do editora da vidimo stilove
+
             while (parent && parent !== editorDiv) {
                 const style = window.getComputedStyle(parent);
-                const fontWeight = style.fontWeight;
-                const fontStyle = style.fontStyle;
+                const fw = style.fontWeight;
+                const fs = style.fontStyle;
 
-                if (fontWeight === '700' || fontWeight === 'bold' || parseInt(fontWeight) >= 700) isBold = true;
-                if (fontStyle === 'italic') isItalic = true;
+              
+                if (fw === 'bold' || fw === 'bolder' || parseInt(fw) >= 700) isBold = true;
+                if (fs === 'italic') isItalic = true;
                 parent = parent.parentElement;
             }
 
-            
-            
-            const wordsInNode = text.split(WORD_SPLIT_REGEX);
+            if (!isBold && !isItalic) continue;
+
+            const wordsInNode = nodeText.split(WORD_SPLIT_REGEX);
             for (let w of wordsInNode) {
+               
                 if (VALID_WORD_CHECK.test(w) && !/^\d+$/.test(w)) {
-                    
-                    if (isBold) boldiranih++; // (Ovo je aproksimacija)
+                    if (isBold) boldiranih++;
                     if (isItalic) italic++;
                 }
             }
         }
 
         
-        const cleanText = editorDiv.innerText || "";
-        const allWords = cleanText.split(/[\s\.,?!:;]+/);
-        ukupno = allWords.filter(w => VALID_WORD_CHECK.test(w) && !/^\d+$/.test(w)).length;
-        
+        if (boldiranih > ukupno) boldiranih = ukupno;
+        if (italic > ukupno) italic = ukupno;
+
         return { ukupno, boldiranih, italic };
     };
 
     let dajUloge = function () {
         const structure = parseScenarioStructure();
         const roles = new Set();
-        
+
         structure.forEach(scene => {
-           
+
             scene.dialogueSegments.forEach(segment => {
                 segment.blocks.forEach(block => {
                     roles.add(block.role);
                 });
             });
         });
-        
+
         return Array.from(roles);
     };
 
     let pogresnaUloga = function () {
         const structure = parseScenarioStructure();
         const roleCounts = {};
-        
+
         // 1. Prebroj pojavljivanja
         structure.forEach(scene => {
             scene.dialogueSegments.forEach(segment => {
@@ -253,32 +238,32 @@ let EditorTeksta = function (divRef) {
         // Levenshteinova distanca funkcija
         const levenshtein = (a, b) => {
             const matrix = [];
-            for(let i=0; i<=b.length; i++) matrix[i] = [i];
-            for(let j=0; j<=a.length; j++) matrix[0][j] = j;
-            for(let i=1; i<=b.length; i++){
-                for(let j=1; j<=a.length; j++){
-                    if(b.charAt(i-1) == a.charAt(j-1)) matrix[i][j] = matrix[i-1][j-1];
-                    else matrix[i][j] = Math.min(matrix[i-1][j-1] + 1, Math.min(matrix[i][j-1] + 1, matrix[i-1][j] + 1));
+            for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+            for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+            for (let i = 1; i <= b.length; i++) {
+                for (let j = 1; j <= a.length; j++) {
+                    if (b.charAt(i - 1) == a.charAt(j - 1)) matrix[i][j] = matrix[i - 1][j - 1];
+                    else matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1));
                 }
             }
             return matrix[b.length][a.length];
         };
 
-      
+
         for (let i = 0; i < roles.length; i++) {
             const A = roles[i];
             for (let j = 0; j < roles.length; j++) {
                 if (i === j) continue;
                 const B = roles[j];
-                
-               
+
+
                 const dist = levenshtein(A, B);
                 const maxDist = (A.length > 5 && B.length > 5) ? 2 : 1;
-                
+
                 if (dist <= maxDist) {
                     const countA = roleCounts[A];
                     const countB = roleCounts[B];
-                    
+
                     if (countB >= 4 && (countB - countA) >= 3) {
                         suspects.add(A);
                     }
@@ -307,7 +292,7 @@ let EditorTeksta = function (divRef) {
         const result = [];
         const targetRole = uloga; // Pretpostavka: parser već vraća uloge onako kako su napisane
 
-     
+
         let allBlocks = [];
         structure.forEach(scene => {
             scene.dialogueSegments.forEach(segment => {
@@ -322,16 +307,16 @@ let EditorTeksta = function (divRef) {
 
         for (let i = 0; i < allBlocks.length; i++) {
             const curr = allBlocks[i];
-         
+
             if (curr.role.toUpperCase() === targetRole.toUpperCase()) {
-                
+
                 let prevObj = null;
                 let nextObj = null;
 
                 // PRETHODNI
                 if (i > 0) {
                     const prev = allBlocks[i - 1];
-                   
+
                     if (prev.sceneTitle === curr.sceneTitle && prev.segmentId === curr.segmentId) {
                         prevObj = {
                             uloga: prev.role,
@@ -340,10 +325,10 @@ let EditorTeksta = function (divRef) {
                     }
                 }
 
-             
+
                 if (i < allBlocks.length - 1) {
                     const next = allBlocks[i + 1];
-                   
+
                     if (next.sceneTitle === curr.sceneTitle && next.segmentId === curr.segmentId) {
                         nextObj = {
                             uloga: next.role,
@@ -372,7 +357,7 @@ let EditorTeksta = function (divRef) {
         const result = [];
 
         structure.forEach(scene => {
-          
+
             scene.dialogueSegments.forEach((segment, index) => {
                 const uniqueRolesInSegment = new Set();
                 const sortedRoles = [];
@@ -397,17 +382,31 @@ let EditorTeksta = function (divRef) {
         return result;
     };
 
-    let formatirajTekst = function (komanda) {
-        // Provjera da li je selekcija unutar editora
+   let formatirajTekst = function (komanda) {
         const selection = window.getSelection();
-        if (selection.rangeCount === 0) return false;
+
         
+        if (!selection || selection.rangeCount === 0) {
+            return false;
+        }
+
+       
+        if (selection.isCollapsed) {
+            return false;
+        }
+
         const range = selection.getRangeAt(0);
         const container = range.commonAncestorContainer;
+
         
-        // Provjera da li je container (ili njegov roditelj ako je text node) unutar editorDiv-a
         let node = container;
         let inside = false;
+
+        
+        if (node.nodeType === 3) { 
+            node = node.parentNode;
+        }
+
         while (node) {
             if (node === editorDiv) {
                 inside = true;
@@ -416,19 +415,22 @@ let EditorTeksta = function (divRef) {
             node = node.parentNode;
         }
 
-        if (!inside) return false;
-        if (selection.toString().length === 0) return false; // Nema selektovanog teksta
+        
+        if (!inside) {
+            return false;
+        }
 
-        // Mapiranje komandi na execCommand
+      
         let execCmd = null;
         if (komanda === 'bold') execCmd = 'bold';
         if (komanda === 'italic') execCmd = 'italic';
         if (komanda === 'underline') execCmd = 'underline';
 
         if (execCmd) {
-            document.execCommand(execCmd, false, null);
-            return true;
+            const success = document.execCommand(execCmd, false, null);
+            return true; 
         }
+
         return false;
     };
 
