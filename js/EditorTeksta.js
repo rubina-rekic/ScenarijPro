@@ -330,15 +330,14 @@ let EditorTeksta = function (divRef) {
         });
     });
 
-    // 2. SPOJI UZASTOPNE REPLIKE ISTE ULOGE
-    // (Ovo je dio koji ti je nedostajao)
+    
     let mergedBlocks = [];
     if (allBlocks.length > 0) {
         let currentMerge = allBlocks[0];
         for (let i = 1; i < allBlocks.length; i++) {
             let next = allBlocks[i];
             
-            // Uslovi za spajanje: Ista uloga, ista scena, isti segment dijaloga
+       
             if (next.role === currentMerge.role && 
                 next.sceneTitle === currentMerge.sceneTitle &&
                 next.segmentId === currentMerge.segmentId) {
@@ -356,7 +355,7 @@ let EditorTeksta = function (divRef) {
         mergedBlocks = allBlocks;
     }
 
-    // 3. Kreiraj traženi format iz MERGED niza
+   
     for (let i = 0; i < mergedBlocks.length; i++) {
         const curr = mergedBlocks[i];
 
