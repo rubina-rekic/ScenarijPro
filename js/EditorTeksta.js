@@ -1,5 +1,5 @@
 let EditorTeksta = function (divRef) {
-    // --- konstruktor i potrebne validacije ---
+    // --- VALIDACIJA KONSTRUKTORA ---
     if (!(divRef instanceof HTMLElement) || divRef.tagName !== 'DIV') {
         throw new Error("Pogresan tip elementa!");
     }
@@ -9,604 +9,429 @@ let EditorTeksta = function (divRef) {
 
     const editorDiv = divRef;
 
-    // --- POMOĆNI REGEX-i---
-
-    const WORD_SPLIT_REGEX = /[\s\.,?!:;]+/g;
+    // --- KONSTANTE I REGEX ---
+    // Riječ: slova, brojevi (u kontekstu riječi), crtice, apostrofi.
+    // Napomena: Zadatak kaže "Brojevi... ne smatraju se riječima".
+    const WORD_SPLIT_REGEX = /[\s\.,?!:;]+/g; 
+    
+    // Regex za validaciju same riječi (mora imati bar jedno slovo, ne smije biti čisti broj)
+    // Dozvoljava: "Word", "It's", "Jean-Luc". Ne dozvoljava: "123", "..."
+    const VALID_WORD_CHECK = /[a-zA-ZčćžšđČĆŽŠĐ]+/; 
 
     const EMPTY_LINE_REGEX = /^\s*$/;
-
-    // Fleksibilniji regex: prepoznaje bilo koju scenu koja počinje sa INT. ili EXT.
-    const SCENE_HEADING_REGEX = /^(INT\.|EXT\.)[^\r\n]+$/i;
-
-    const ROLE_NAME_REGEX = /^[A-Z\s]+$/;
-
+    const SCENE_HEADING_REGEX = /^(INT\.|EXT\.)[\w\W]*\s-\s(DAY|NIGHT|AFTERNOON|MORNING|EVENING)\s*$/;
+    // Uloga: Samo velika slova i razmaci, mora imati bar jedno slovo.
+    const ROLE_NAME_REGEX = /^(?=.*[A-ZČĆŽŠĐ])[A-ZČĆŽŠĐ\s]+$/;
     const PARENTHETICAL_LINE_REGEX = /^\s*\(.+\)\s*$/;
 
-    /**
-     * Parsira sav tekst iz editora u strukturirani niz linija.
-     * Svaki element niza je linija, a HTML tagovi su uklonjeni.
-     * @returns {string[]} Niz linija teksta
-     */
-    const getLines = () => {
-
+    // --- INTERNI PARSER (Srce modula) ---
+    const parseScenarioStructure = () => {
         let content = editorDiv.innerHTML;
-
+        // Normalizacija novih redova
         content = content.replace(/<br\s*\/?>/gi, '\n');
-
-
-        content = content.replace(/<\/(div|p|li)>/gi, '\n');
+        content = content.replace(/<\/div>/gi, '\n</div>');
+        content = content.replace(/<\/p>/gi, '\n</p>');
+        
+        
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = content;
-        const textContent = tempDiv.textContent || tempDiv.innerText;
+        const rawText = tempDiv.innerText || tempDiv.textContent; 
+        const lines = rawText.split('\n');
 
-
-        return textContent.split('\n');
-    };
-
-
-    const parseScenarioStructure = () => {
-        const lines = getLines();
         const structure = [];
-        let currentScene = null;
-        let lastRole = null;
-        let currentDialogueSegment = null;
-        let dialogueReplicaIndex = 0; // Broji replike unutar scene
+        let currentScene = {
+            title: null, // Implicitna scena ako nema naslova
+            roles: new Map(), // Map<ImeUloge, Array<Block>>
+            dialogueSegments: [] // Array<{id, blocks:[]}>
+        };
+        structure.push(currentScene);
 
+        let currentDialogueSegment = null;
+        let segmentCounter = 0;
+        let replicaIndexInScene = 0;
+
+        // Pomoćna funkcija za zatvaranje segmenta
         const finishDialogueSegment = () => {
-            // Dodaj segment samo ako ima barem jedan blok (ulogu) i currentScene postoji
-            if (
-                currentDialogueSegment &&
-                Array.isArray(currentDialogueSegment.blocks) &&
-                currentDialogueSegment.blocks.length > 0 &&
-                currentScene
-            ) {
-                currentScene.dialogueSegments.push(currentDialogueSegment);
+            if (currentDialogueSegment) {
+                if (currentDialogueSegment.blocks.length > 0) {
+                    currentScene.dialogueSegments.push(currentDialogueSegment);
+                }
+                currentDialogueSegment = null;
             }
-            currentDialogueSegment = null;
         };
 
         const startNewDialogueSegment = () => {
-            if (currentDialogueSegment && currentDialogueSegment.blocks && currentDialogueSegment.blocks.length > 0) {
-                finishDialogueSegment();
-            }
-            currentDialogueSegment = { blocks: [] };
+            finishDialogueSegment();
+            segmentCounter++;
+            currentDialogueSegment = {
+                id: segmentCounter,
+                blocks: []
+            };
         };
 
         for (let i = 0; i < lines.length; i++) {
-            const line = lines[i].trim();
-            const originalLine = lines[i];
+            let line = lines[i].trim();
+            const originalLine = lines[i]; // Čuvamo original radi indentation ako treba, mada trimamo za logiku
 
             if (EMPTY_LINE_REGEX.test(originalLine)) {
-                continue;
+                 continue;
             }
 
-            // 1. NASLOV SCENE
+            
             if (SCENE_HEADING_REGEX.test(line)) {
                 finishDialogueSegment();
+                // Nova scena
                 currentScene = {
                     title: line,
-                    lines: [], // Sve linije unutar scene
-                    roles: new Map(), // Svi blokovi govora uloge
-                    dialogueSegments: [] // Grupe blokova govora
+                    roles: new Map(),
+                    dialogueSegments: []
                 };
                 structure.push(currentScene);
-                dialogueReplicaIndex = 0;
-                lastRole = null;
+                replicaIndexInScene = 0;
+                segmentCounter = 0;
                 continue;
             }
 
-            // Ako još nismo u sceni, provjeri da li je linija ULOGA; ako jeste, kreiraj implicitnu scenu,
-            // inače preskoči dok ne nađemo naslov scene
-            if (!currentScene) {
-                if (ROLE_NAME_REGEX.test(line)) {
-                    // Kreiraj implicitnu scenu da bismo mogli parsirati uloge prije eksplicitnog naslova
-                    currentScene = {
-                        title: null,
-                        lines: [],
-                        roles: new Map(),
-                        dialogueSegments: []
-                    };
-                    structure.push(currentScene);
-                    dialogueReplicaIndex = 0;
-                    lastRole = null;
-                    // ne nastavljamo; dopusti daljnju obradu ove linije
-                } else {
-                    // Ako nije scena, a nije prazna linija, tretiraj kao akciju prije prve scene
-                    if (!EMPTY_LINE_REGEX.test(originalLine)) {
+            //  POTENCIJALNA ULOGA
+            if (ROLE_NAME_REGEX.test(line)) {
+               let hasDialogue = false;
+                let j = i + 1;
+                let bufferLines = []; // Linije govora
 
-                        lastRole = null;
-                        finishDialogueSegment();
+                while (j < lines.length) {
+                    const nextLine = lines[j];
+                    const nextTrim = nextLine.trim();
+                    
+                    if (SCENE_HEADING_REGEX.test(nextTrim)) break; // Nailazak na scenu prekida
+                    if (ROLE_NAME_REGEX.test(nextTrim)) break; 
+                    if (EMPTY_LINE_REGEX.test(nextLine)) {
+                        break; 
                     }
+
+                    // Ako nije prazna
+                    if (!PARENTHETICAL_LINE_REGEX.test(nextTrim)) {
+                        
+                        hasDialogue = true;
+                       
+                    }
+                    
+                    // Dodajemo u buffer (uključujući zagrade, jer su dio bloka, iako se ne računaju u govor)
+                    bufferLines.push(nextTrim);
+                    j++;
+                }
+
+                // Provjera validnosti uloge (mora postojati bar jedna linija koja nije zagrada)
+                const containsActualSpeech = bufferLines.some(l => !PARENTHETICAL_LINE_REGEX.test(l));
+
+                if (containsActualSpeech) {
+                    // JESTE ULOGA
+                    const roleName = line;
+                    
+                    if (!currentDialogueSegment) {
+                        startNewDialogueSegment();
+                    }
+
+                    replicaIndexInScene++;
+                    
+                   const cleanReplicaLines = bufferLines.filter(l => !PARENTHETICAL_LINE_REGEX.test(l));
+
+                    const block = {
+                        role: roleName,
+                        replica: cleanReplicaLines.join('\n'), // Samo govor
+                        sceneTitle: currentScene.title,
+                        replicaIndex: replicaIndexInScene,
+                        segmentId: currentDialogueSegment.id
+                    };
+
+                    currentDialogueSegment.blocks.push(block);
+
+                    // Dodaj u mapu uloga za scenu
+                    if (!currentScene.roles.has(roleName)) {
+                        currentScene.roles.set(roleName, []);
+                    }
+                    currentScene.roles.get(roleName).push(block);
+
+                    // Pomjeri glavni brojač 'i' za onoliko koliko smo linija 'pojeli'
+                    i = j - 1; 
                     continue;
                 }
             }
 
-            // Dodaj liniju u trenutnu scenu
-            currentScene.lines.push(originalLine);
-
-
-            // 2. POTENCIJALNA ULOGA
-            if (ROLE_NAME_REGEX.test(line)) {
-
-                // Potencijalna ULOGA: (HARRY POTTER)
-                const roleName = line.trim();
-                const dialogueLines = []; // Samo čiste linije govora
-
-                // Traženje prve ne-prazne linije nakon uloge koja NIJE samo scenska napomena
-                let j = i + 1;
-                let dialogueStartLine = null;
-                let dialogueStartIndex = -1;
-
-                while (j < lines.length) {
-                    const currentLine = lines[j];
-                    if (!EMPTY_LINE_REGEX.test(currentLine)) {
-                        const trimmedLine = currentLine.trim();
-                        // Ako je samo scenska napomena, nastavi tražiti
-                        if (PARENTHETICAL_LINE_REGEX.test(trimmedLine)) {
-                            j++;
-                            continue;
-                        }
-                        dialogueStartLine = trimmedLine;
-                        dialogueStartIndex = j;
-                        break; // Našli smo prvu ne-praznu liniju koja nije samo napomena
-                    }
-                    j++;
-                }
-
-                // Validacija govora
-                const isValidDialogueStarter = dialogueStartLine && !SCENE_HEADING_REGEX.test(dialogueStartLine)
-                    && !ROLE_NAME_REGEX.test(dialogueStartLine)
-
-                    && !PARENTHETICAL_LINE_REGEX.test(dialogueStartLine);
-
-
-
-                if (isValidDialogueStarter) {
-
-                    if (!currentScene) {
-                        currentScene = {
-                            title: null,
-                            lines: [],
-                            roles: new Map(),
-                            dialogueSegments: []
-                        };
-                        structure.push(currentScene);
-                        dialogueReplicaIndex = 0;
-                        lastRole = null;
-                    }
-
-                    // Provjera prekida dijalog segmenta: (Ako je nova uloga, resetiraj segment)
-                    if (!currentDialogueSegment || lastRole === null || lastRole.toUpperCase() !== roleName.toUpperCase()) {
-                        startNewDialogueSegment();
-                    }
-
-                    // Skupljanje bloka govora (počevši od dialogueStartIndex)
-                    j = i + 1; // Resetiramo j da počnemo odmah nakon uloge (indeks i)
-                    let linesInReplica = []; // Skuplja sve linije replike (prazne, napomene, govor) za currentScene.lines
-
-                    while (j < lines.length) {
-                        const currentDialogueLine = lines[j];
-                        const trimmedLine = currentDialogueLine.trim();
-
-                        // 1. Prekidanje bloka govora
-                        if (SCENE_HEADING_REGEX.test(trimmedLine) || ROLE_NAME_REGEX.test(trimmedLine)) {
-                            break; // Nova scena ili nova uloga prekidaju blok.
-                        }
-
-                        // Dodajemo sve linije replike u privremeni niz za scenu, 
-                        // što rješava problem nedostajućih linija u currentScene.lines
-                        linesInReplica.push(currentDialogueLine);
-
-                        // 2. Prazne linije NE prekidaju blok govora, ali se NE broje u linije teksta.
-                        if (EMPTY_LINE_REGEX.test(currentDialogueLine)) {
-                            j++;
-                            continue;
-                        }
-
-                        // 3. Scenska napomena (samo zagrade) se NE računa kao govor, ali ne prekida blok.
-                        if (!PARENTHETICAL_LINE_REGEX.test(trimmedLine)) {
-                            // Linije koje nisu samo scenske napomene ulaze u blok za brojanje linija/riječi.
-                            dialogueLines.push(trimmedLine);
-                        }
-
-                        // Prelazak na sljedeću liniju
-                        j++;
-                    }
-
-                    currentScene.lines.push(...linesInReplica);
-
-                    // Ako je sakupljen validan blok govora
-                    if (dialogueLines.length > 0) {
-                        const newBlock = {
-                            role: roleName,
-                            replica: dialogueLines.join('\n'),
-                            sceneTitle: currentScene.title,
-                            replicaIndexInScene: ++dialogueReplicaIndex
-                        };
-
-                        // Punjenje strukture
-                        if (!currentScene.roles.has(roleName)) {
-                            currentScene.roles.set(roleName, []);
-                        }
-                        currentScene.roles.get(roleName).push(newBlock);
-
-                        if (!currentDialogueSegment) {
-                            startNewDialogueSegment();
-                        }
-                        currentDialogueSegment.blocks.push(newBlock);
-
-                        lastRole = roleName;
-                        i = j - 1; // Postavljamo i na liniju prije kraja bloka, jer će i++ preći na sljedeću liniju.
-                        continue;
-                    }
-                }
-            }
-
-
-            if (
-                !SCENE_HEADING_REGEX.test(line) &&
-                !ROLE_NAME_REGEX.test(line) &&
-                !EMPTY_LINE_REGEX.test(line) &&
-                !PARENTHETICAL_LINE_REGEX.test(line)
-            ) {
-                // Prava akcijska linija prekida segment
-                lastRole = null;
+             if (!PARENTHETICAL_LINE_REGEX.test(line)) {
+                // Ovo je akcija. Akcija prekida dijalog segment.
                 finishDialogueSegment();
-                // Novi segment se kreira tek kad naiđe nova validna uloga s govorom
             }
-            // Linija u zagradama NE prekida dijalog segment i NE resetira lastRole
         }
-
-        finishDialogueSegment(); // Završi posljednji segment
+        finishDialogueSegment(); // Zatvori zadnji
         return structure;
     };
 
+    // --- METODE ---
 
-    // --- POMOĆNE FUNKCIJE ZA formatirajTekst ---
-
-    const isSelectionInEditor = () => {
-        const selection = window.getSelection();
-        if (!selection.rangeCount) return false;
-
-        const range = selection.getRangeAt(0);
-        return editorDiv.contains(range.startContainer) && editorDiv.contains(range.endContainer);
-    };
-
-    /**
-     * Pomoćna funkcija za izračunavanje Levenshteinove udaljenosti.
-     * @param {string} a 
-     * @param {string} b
-     * @returns {number} 
-     */
-    const levenshteinDistance = (a, b) => {
-        if (a.length === 0) return b.length;
-        if (b.length === 0) return a.length;
-
-        const matrix = [];
-
-        // Inicijalizacija prve kolone
-        for (let i = 0; i <= b.length; i++) {
-            matrix[i] = [i];
-        }
-
-        // Inicijalizacija prvog reda
-        for (let j = 0; j <= a.length; j++) {
-            matrix[0][j] = j;
-        }
-
-        // Popunjavanje matrice
-        for (let i = 1; i <= b.length; i++) {
-            for (let j = 1; j <= a.length; j++) {
-                const cost = a[j - 1] === b[i - 1] ? 0 : 1;
-                matrix[i][j] = Math.min(
-                    matrix[i - 1][j] + 1, // Umetanje
-                    matrix[i][j - 1] + 1, // Brisanje
-                    matrix[i - 1][j - 1] + cost // Zamjena
-                );
-            }
-        }
-
-        return matrix[b.length][a.length];
-    };
-
-    // --- IMPLEMENTACIJA METODA MODULA ---
-
-    // NOVA I POBOLJŠANA IMPLEMENTACIJA METODE dajBrojRijeci
     let dajBrojRijeci = function () {
         let ukupno = 0;
         let boldiranih = 0;
         let italic = 0;
 
-        // Regex za pronalaženje VALIDNE RIJEČI (koja nije čisti broj ili samostalni znak)
-        // \b označava granicu riječi.
-        // [\w'-]+ - hvata niz alfanumeričkih znakova, apostrofa ili crtica.
-        const VALID_WORD_REGEX = /\b([\w'-]+)\b/g;
-
-        const treeWalker = document.createTreeWalker(
-            editorDiv,
-            NodeFilter.SHOW_TEXT,
-            {
-                acceptNode: (node) => {
-                    // Izbjegavanje skrivenih elemenata i onih unutar skripte/stila
-                    if (node.parentElement && (node.parentElement.style.display === 'none' || node.parentElement.nodeName === 'STYLE' || node.parentElement.nodeName === 'SCRIPT')) {
-                        return NodeFilter.FILTER_REJECT;
-                    }
-                    return NodeFilter.FILTER_ACCEPT;
-                }
-            },
-            false
-        );
-
+        
+        const walker = document.createTreeWalker(editorDiv, NodeFilter.SHOW_TEXT, null, false);
         let node;
-        while (node = treeWalker.nextNode()) {
-            const textContent = node.nodeValue;
-            if (!textContent) continue;
 
-            // KORISTI match() da pronađe samo ono što izgleda kao riječ
-            const words = textContent.match(VALID_WORD_REGEX);
+        while (node = walker.nextNode()) {
+            const text = node.nodeValue;
+            if (!text.trim()) continue;
 
-            if (!words) continue;
-
-            // Pronađi elemente formata iznad ovog tekstualnog čvora PRIJE petlje riječi
+            // Provjera roditelja za stil
             let parent = node.parentElement;
             let isBold = false;
             let isItalic = false;
-
+            
+            // Penjemo se do editora da vidimo stilove
             while (parent && parent !== editorDiv) {
-                if (parent.nodeName === 'B' || parent.nodeName === 'STRONG') isBold = true;
-                if (parent.nodeName === 'I' || parent.nodeName === 'EM') isItalic = true;
-                if (isBold && isItalic) break;
+                const style = window.getComputedStyle(parent);
+                const fontWeight = style.fontWeight;
+                const fontStyle = style.fontStyle;
+
+                if (fontWeight === '700' || fontWeight === 'bold' || parseInt(fontWeight) >= 700) isBold = true;
+                if (fontStyle === 'italic') isItalic = true;
                 parent = parent.parentElement;
             }
 
-            for (let word of words) {
-                // Pravilo 1: Isključi oznake HTML elemenata
-                if (/^<.+>$/.test(word.trim())) continue;
-
-                // Pravilo 2: Isključi čiste brojeve (može biti i decimalni)
-                // Ako riječ sadrži samo brojeve, zanemari je.
-                if (/^\d+(\.\d+)?$/.test(word)) {
-                    continue;
+            
+            
+            const wordsInNode = text.split(WORD_SPLIT_REGEX);
+            for (let w of wordsInNode) {
+                if (VALID_WORD_CHECK.test(w) && !/^\d+$/.test(w)) {
+                    
+                    if (isBold) boldiranih++; // (Ovo je aproksimacija)
+                    if (isItalic) italic++;
                 }
-
-                // Pravilo 3: Isključi samostalne interpunkcijske znakove (koje bi regex mogao promašiti, npr. '&')
-                if (word.length === 1 && /[^a-zA-Z0-9'-]/.test(word)) {
-                    continue;
-                }
-
-                // Ako je došla dovde, riječ je validna.
-                ukupno++;
-
-                if (isBold) boldiranih++;
-                if (isItalic) italic++;
             }
         }
 
-        return {
-            ukupno: ukupno,
-            boldiranih: boldiranih,
-            italic: italic
-        };
+        
+        const cleanText = editorDiv.innerText || "";
+        const allWords = cleanText.split(/[\s\.,?!:;]+/);
+        ukupno = allWords.filter(w => VALID_WORD_CHECK.test(w) && !/^\d+$/.test(w)).length;
+        
+        return { ukupno, boldiranih, italic };
     };
 
     let dajUloge = function () {
         const structure = parseScenarioStructure();
-        const uniqueRoles = new Set();
-        const rolesInOrder = [];
-
-        // Prođi kroz sve scene i sve blokove govora
-        for (const scene of structure) {
-            // Skupi sve uloge iz svih dijalog segmenata unutar scene
-            for (const segment of scene.dialogueSegments) {
-                for (const block of segment.blocks) {
-                    const roleName = block.role;
-                    if (!uniqueRoles.has(roleName)) {
-                        uniqueRoles.add(roleName);
-                        rolesInOrder.push(roleName);
-                    }
-                }
-            }
-        }
-
-        return rolesInOrder;
+        const roles = new Set();
+        
+        structure.forEach(scene => {
+           
+            scene.dialogueSegments.forEach(segment => {
+                segment.blocks.forEach(block => {
+                    roles.add(block.role);
+                });
+            });
+        });
+        
+        return Array.from(roles);
     };
 
     let pogresnaUloga = function () {
         const structure = parseScenarioStructure();
-        const roleCounts = new Map();
-        const roleNames = [];
+        const roleCounts = {};
+        
+        // 1. Prebroj pojavljivanja
+        structure.forEach(scene => {
+            scene.dialogueSegments.forEach(segment => {
+                segment.blocks.forEach(block => {
+                    const r = block.role;
+                    roleCounts[r] = (roleCounts[r] || 0) + 1;
+                });
+            });
+        });
 
-        // 1. Prikupljanje svih jedinstvenih uloga i broja pojavljivanja
-        for (const scene of structure) {
-            for (const segment of scene.dialogueSegments) {
-                for (const block of segment.blocks) {
-                    const roleName = block.role;
-                    roleCounts.set(roleName, (roleCounts.get(roleName) || 0) + 1);
-                    if (!roleNames.includes(roleName)) {
-                        roleNames.push(roleName);
+        const roles = Object.keys(roleCounts);
+        const suspects = new Set();
+
+        // Levenshteinova distanca funkcija
+        const levenshtein = (a, b) => {
+            const matrix = [];
+            for(let i=0; i<=b.length; i++) matrix[i] = [i];
+            for(let j=0; j<=a.length; j++) matrix[0][j] = j;
+            for(let i=1; i<=b.length; i++){
+                for(let j=1; j<=a.length; j++){
+                    if(b.charAt(i-1) == a.charAt(j-1)) matrix[i][j] = matrix[i-1][j-1];
+                    else matrix[i][j] = Math.min(matrix[i-1][j-1] + 1, Math.min(matrix[i][j-1] + 1, matrix[i-1][j] + 1));
+                }
+            }
+            return matrix[b.length][a.length];
+        };
+
+      
+        for (let i = 0; i < roles.length; i++) {
+            const A = roles[i];
+            for (let j = 0; j < roles.length; j++) {
+                if (i === j) continue;
+                const B = roles[j];
+                
+               
+                const dist = levenshtein(A, B);
+                const maxDist = (A.length > 5 && B.length > 5) ? 2 : 1;
+                
+                if (dist <= maxDist) {
+                    const countA = roleCounts[A];
+                    const countB = roleCounts[B];
+                    
+                    if (countB >= 4 && (countB - countA) >= 3) {
+                        suspects.add(A);
                     }
                 }
             }
         }
-
-        const potentiallyWrongRoles = new Set();
-
-        // 2. Poređenje svake uloge (A) sa svakom drugom (B)
-        for (let i = 0; i < roleNames.length; i++) {
-            const roleA = roleNames[i];
-            const countA = roleCounts.get(roleA);
-
-            for (let j = 0; j < roleNames.length; j++) {
-                if (i === j) continue;
-
-                const roleB = roleNames[j];
-                const countB = roleCounts.get(roleB);
-
-                const lengthA = roleA.replace(/\s/g, '').length;
-                const lengthB = roleB.replace(/\s/g, '').length;
-                const dist = levenshteinDistance(roleA.replace(/\s/g, ''), roleB.replace(/\s/g, ''));
-
-                // Odredi maksimalnu dozvoljenu udaljenost
-
-                let maxDist;
-                const lenA = roleA.replace(/\s/g, '').length; // Ponovo koristimo lengthA
-                if (lenA > 5) {
-                    maxDist = 2;
-                } else {
-                    maxDist = 1;
-                }
-
-                // Uslov 1: Vrlo su slične
-                const isVerySimilar = dist <= maxDist;
-
-                // Uslov 2: B se pojavljuje znatno češće od A
-                const isBMoreFrequent = countB >= 4 && (countB - countA) >= 3;
-
-                // Ako je A potencijalno pogrešna uloga, a B je ispravna verzija
-                if (isVerySimilar && isBMoreFrequent) {
-                    potentiallyWrongRoles.add(roleA);
-                    // Prekidamo unutrašnju petlju jer je A već detektovana kao pogrešna
-                    break;
-                }
-            }
-        }
-
-        return Array.from(potentiallyWrongRoles);
+        return Array.from(suspects);
     };
 
     let brojLinijaTeksta = function (uloga) {
-        const targetRole = uloga.toUpperCase();
         const structure = parseScenarioStructure();
-        let totalLines = 0;
-
-        for (const scene of structure) {
-            // Provjeri sve prikupljene blokove govora u toj sceni
-            for (const roleBlocks of scene.roles.values()) {
-                for (const block of roleBlocks) {
-                    if (block.role.toUpperCase() === targetRole) {
-                        // Broj linija teksta je broj linija u replici.
-                        totalLines += block.replica.split('\n').length;
-                    }
-                }
+        let count = 0;
+        structure.forEach(scene => {
+            if (scene.roles.has(uloga)) {
+                scene.roles.get(uloga).forEach(block => {
+                    if (block.replica.length > 0)
+                        count += block.replica.split('\n').length;
+                });
             }
-        }
-
-        return totalLines;
+        });
+        return count;
     };
 
     let scenarijUloge = function (uloga) {
-        const targetRoleUpper = uloga.toUpperCase();
         const structure = parseScenarioStructure();
-        const results = [];
+        const result = [];
+        const targetRole = uloga; // Pretpostavka: parser već vraća uloge onako kako su napisane
 
-        // 1. Kreiraj globalni niz svih blokova govora, uz zadržavanje scene i indeksa
-        const allBlocks = [];
-        for (const scene of structure) {
-            for (const segment of scene.dialogueSegments) {
-                for (const block of segment.blocks) {
-                    allBlocks.push(block);
-                }
-            }
-        }
+     
+        let allBlocks = [];
+        structure.forEach(scene => {
+            scene.dialogueSegments.forEach(segment => {
+                segment.blocks.forEach(block => {
+                    allBlocks.push({
+                        ...block,
+                        sceneObj: scene
+                    });
+                });
+            });
+        });
 
-        // 2. Prođi kroz globalni niz i formiraj strukturu
         for (let i = 0; i < allBlocks.length; i++) {
-            const currentBlock = allBlocks[i];
+            const curr = allBlocks[i];
+         
+            if (curr.role.toUpperCase() === targetRole.toUpperCase()) {
+                
+                let prevObj = null;
+                let nextObj = null;
 
-            if (currentBlock.role.toUpperCase() === targetRoleUpper) {
-                const prevBlock = allBlocks[i - 1];
-                const nextBlock = allBlocks[i + 1];
-
-                let previous = null;
-                let next = null;
-
-                // Prethodna replika (samo ako postoji i ako je dio ISTOG DIJALOG SEGMENTA, tj. nije prekinuta akcijom/scenom)
-                // U našoj strukturi, svi blokovi su već poredani unutar scene/segmenta,
-                // ali moramo provjeriti da li su u istom dialogueSegmentu (da nije uloga=A, akcija, uloga=A)
-
-                // Pojednostavljeni pristup: Koristimo samo allBlocks (jer su blokovi u segmentu već uzastopni)
-                if (prevBlock && prevBlock.sceneTitle === currentBlock.sceneTitle) {
-                    // Provjera prekida segmenta nije striktno potrebna ovdje ako je parser ispravno radio
-                    previous = {
-                        uloga: prevBlock.role,
-                        linije: prevBlock.replica
-                    };
+                // PRETHODNI
+                if (i > 0) {
+                    const prev = allBlocks[i - 1];
+                   
+                    if (prev.sceneTitle === curr.sceneTitle && prev.segmentId === curr.segmentId) {
+                        prevObj = {
+                            uloga: prev.role,
+                            linije: prev.replica
+                        };
+                    }
                 }
 
-                // Sljedeća replika (samo ako postoji i u istom je segmentu)
-                if (nextBlock && nextBlock.sceneTitle === currentBlock.sceneTitle) {
-                    next = {
-                        uloga: nextBlock.role,
-                        linije: nextBlock.replica
-                    };
+             
+                if (i < allBlocks.length - 1) {
+                    const next = allBlocks[i + 1];
+                   
+                    if (next.sceneTitle === curr.sceneTitle && next.segmentId === curr.segmentId) {
+                        nextObj = {
+                            uloga: next.role,
+                            linije: next.replica
+                        };
+                    }
                 }
 
-                results.push({
-                    scena: currentBlock.sceneTitle,
-                    pozicijaUTekstu: currentBlock.replicaIndexInScene,
-                    prethodni: previous,
+                result.push({
+                    scena: curr.sceneTitle || "Nepoznata scena", // ili null ako je implicitna
+                    pozicijaUTekstu: curr.replicaIndex,
+                    prethodni: prevObj,
                     trenutni: {
-                        uloga: currentBlock.role,
-                        linije: currentBlock.replica
+                        uloga: curr.role,
+                        linije: curr.replica
                     },
-                    sljedeci: next
+                    sljedeci: nextObj
                 });
             }
         }
-
-        return results;
+        return result;
     };
 
     let grupisiUloge = function () {
         const structure = parseScenarioStructure();
-        const groups = [];
+        const result = [];
 
-        for (const scene of structure) {
-            let segmentIndex = 0;
-            for (const segment of scene.dialogueSegments) {
-                if (segment.blocks.length > 0) {
-                    groups.push({
+        structure.forEach(scene => {
+          
+            scene.dialogueSegments.forEach((segment, index) => {
+                const uniqueRolesInSegment = new Set();
+                const sortedRoles = [];
+
+                segment.blocks.forEach(block => {
+                    if (!uniqueRolesInSegment.has(block.role)) {
+                        uniqueRolesInSegment.add(block.role);
+                        sortedRoles.push(block.role);
+                    }
+                });
+
+                if (sortedRoles.length > 0) {
+                    result.push({
                         scena: scene.title,
-                        segment: segmentIndex + 1,
-                        uloge: segment.blocks.map(b => b.role)
+                        segment: index + 1, // Indeksacija od 1
+                        uloge: sortedRoles
                     });
-                    segmentIndex++;
                 }
-            }
-        }
+            });
+        });
 
-        return groups;
+        return result;
     };
 
     let formatirajTekst = function (komanda) {
-        if (!isSelectionInEditor()) {
-            return false;
-        }
-
-        const allowedCommands = ["bold", "italic", "underline"];
-        if (!allowedCommands.includes(komanda)) {
-            console.error("Nepoznata komanda za formatiranje:", komanda);
-            return false;
-        }
-
+        // Provjera da li je selekcija unutar editora
         const selection = window.getSelection();
-        if (selection.isCollapsed) {
-            return false; // Ništa nije označeno
+        if (selection.rangeCount === 0) return false;
+        
+        const range = selection.getRangeAt(0);
+        const container = range.commonAncestorContainer;
+        
+        // Provjera da li je container (ili njegov roditelj ako je text node) unutar editorDiv-a
+        let node = container;
+        let inside = false;
+        while (node) {
+            if (node === editorDiv) {
+                inside = true;
+                break;
+            }
+            node = node.parentNode;
         }
 
-        // Korištenje document.execCommand
-        try {
-            // execCommand rukuje neugniježđivanjem za bold i italic, 
-            // a za underline koristi <U> tag (ili span/style, ovisno o browseru).
-            document.execCommand(komanda, false, null);
+        if (!inside) return false;
+        if (selection.toString().length === 0) return false; // Nema selektovanog teksta
+
+        // Mapiranje komandi na execCommand
+        let execCmd = null;
+        if (komanda === 'bold') execCmd = 'bold';
+        if (komanda === 'italic') execCmd = 'italic';
+        if (komanda === 'underline') execCmd = 'underline';
+
+        if (execCmd) {
+            document.execCommand(execCmd, false, null);
             return true;
-        } catch (e) {
-            console.error("Greška pri formatiranju:", e);
-            return false;
         }
+        return false;
     };
 
-    // --- JAVNI INTERFEJS MODULA ---
     return {
         dajBrojRijeci: dajBrojRijeci,
         dajUloge: dajUloge,
