@@ -22,17 +22,15 @@ let EditorTeksta = function (divRef) {
     const PARENTHETICAL_LINE_REGEX = /^\s*\(.+\)\s*$/;
 
     const parseScenarioStructure = () => {
-
         let text = editorDiv.innerText;
-
         text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
         const lines = text.split('\n');
 
         const structure = [];
         let currentScene = {
-            title: null, // Implicitna scena ako nema naslova
-            roles: new Map(), // Map<ImeUloge, Array<Block>>
-            dialogueSegments: [] // Array<{id, blocks:[]}>
+            title: null,
+            roles: new Map(),
+            dialogueSegments: []
         };
         structure.push(currentScene);
 
@@ -40,7 +38,6 @@ let EditorTeksta = function (divRef) {
         let segmentCounter = 0;
         let replicaIndexInScene = 0;
 
-        // Pomoćna funkcija za zatvaranje segmenta
         const finishDialogueSegment = () => {
             if (currentDialogueSegment) {
                 if (currentDialogueSegment.blocks.length > 0) {
@@ -62,88 +59,96 @@ let EditorTeksta = function (divRef) {
         for (let i = 0; i < lines.length; i++) {
             let line = lines[i].trim();
 
-            // Preskoči prazne linije
             if (EMPTY_LINE_REGEX.test(line)) continue;
 
-            // 1. SCENA (Ovo ti je bilo dobro, ali dodajemo closeSegment)
+            // 1. SCENA
             if (SCENE_HEADING_REGEX.test(line)) {
-                finishDialogueSegment(); // Bitno: scena prekida dijalog
-                currentScene = {
-                    title: line,
-                    roles: new Map(),
-                    dialogueSegments: []
-                };
-                structure.push(currentScene);
-                replicaIndexInScene = 0;
-                segmentCounter = 0;
+                finishDialogueSegment();
+                // Ako je prva scena prazna, pregazi je, inače nova
+                if (structure.length === 1 && !structure[0].title && structure[0].dialogueSegments.length === 0) {
+                    structure[0].title = line;
+                    currentScene = structure[0];
+                } else {
+                    currentScene = {
+                        title: line,
+                        roles: new Map(),
+                        dialogueSegments: []
+                    };
+                    structure.push(currentScene);
+                    replicaIndexInScene = 0;
+                    segmentCounter = 0;
+                }
                 continue;
             }
 
-
+            // 2. ULOGA
             if (ROLE_NAME_REGEX.test(line)) {
+                // --- IZMJENA: Tražimo prvu liniju govora, preskačući prazne ---
+                let speechStartIndex = i + 1;
+                while (speechStartIndex < lines.length && EMPTY_LINE_REGEX.test(lines[speechStartIndex])) {
+                    speechStartIndex++;
+                }
 
-                if (i + 1 < lines.length) {
-                    let nextLineRaw = lines[i + 1];
-
-                    if (EMPTY_LINE_REGEX.test(nextLineRaw)) {
-                        finishDialogueSegment(); // Ovo je onda akcija, prekida dijalog
-                        continue;
-                    }
-
-
+                if (speechStartIndex < lines.length) {
+                    let nextLineRaw = lines[speechStartIndex];
                     let nextTrim = nextLineRaw.trim();
-                    if (SCENE_HEADING_REGEX.test(nextTrim) || ROLE_NAME_REGEX.test(nextTrim)) {
-                        finishDialogueSegment();
-                        continue;
-                    }
 
-                    // Ako smo prošli provjere, skupljamo govor
-                    let bufferLines = [];
-                    let j = i + 1;
-                    while (j < lines.length) {
-                        let ln = lines[j].trim();
-                        // Prekidi bloka govora:
-                        if (EMPTY_LINE_REGEX.test(ln)) break; // Prazna linija prekida blok
-                        if (SCENE_HEADING_REGEX.test(ln)) break;
-                        if (ROLE_NAME_REGEX.test(ln)) break;
+                    // Provjera da li je ta linija validan govor (nije scena, nije druga uloga)
+                    if (!SCENE_HEADING_REGEX.test(nextTrim) && !ROLE_NAME_REGEX.test(nextTrim)) {
+                        
+                        // Skupljamo govor
+                        let bufferLines = [];
+                        let j = speechStartIndex;
+                        
+                        while (j < lines.length) {
+                            let ln = lines[j].trim();
+                            
+                            // Prekidi bloka govora:
+                            if (EMPTY_LINE_REGEX.test(ln)) break; 
+                            if (SCENE_HEADING_REGEX.test(ln)) break;
+                            if (ROLE_NAME_REGEX.test(ln)) break;
 
-                        bufferLines.push(ln);
-                        j++;
-                    }
+                            bufferLines.push(ln);
+                            j++;
+                        }
 
-                    // Provjera ima li govora koji nije u zagradi
-                    const cleanReplicaLines = bufferLines.filter(l => !PARENTHETICAL_LINE_REGEX.test(l));
+                        const cleanReplicaLines = bufferLines.filter(l => !PARENTHETICAL_LINE_REGEX.test(l));
 
-                    if (cleanReplicaLines.length > 0) {
-                        // USPJEŠNA ULOGA
-                        const roleName = line;
-                        if (!currentDialogueSegment) startNewDialogueSegment();
+                        if (cleanReplicaLines.length > 0) {
+                            // USPJEŠNA ULOGA
+                            const roleName = line;
+                            if (!currentDialogueSegment) startNewDialogueSegment();
 
-                        replicaIndexInScene++;
-                        const block = {
-                            role: roleName,
-                            replica: cleanReplicaLines.join('\n'),
-                            sceneTitle: currentScene.title,
-                            replicaIndex: replicaIndexInScene,
-                            segmentId: currentDialogueSegment.id
-                        };
+                            replicaIndexInScene++;
+                            const block = {
+                                role: roleName,
+                                replica: cleanReplicaLines.join('\n'),
+                                sceneTitle: currentScene.title,
+                                replicaIndex: replicaIndexInScene,
+                                segmentId: currentDialogueSegment.id
+                            };
 
-                        currentDialogueSegment.blocks.push(block);
-                        if (!currentScene.roles.has(roleName)) currentScene.roles.set(roleName, []);
-                        currentScene.roles.get(roleName).push(block);
+                            currentDialogueSegment.blocks.push(block);
+                            if (!currentScene.roles.has(roleName)) currentScene.roles.set(roleName, []);
+                            currentScene.roles.get(roleName).push(block);
 
-                        i = j - 1;
-                        continue;
+                            i = j - 1; // Preskačemo obrađene linije
+                            continue;
+                        }
                     }
                 }
-            }
-
-
-            if (!PARENTHETICAL_LINE_REGEX.test(line)) {
+                // Ako smo ovdje, znači da je izgledalo kao uloga, ali nema govora -> Akcija
                 finishDialogueSegment();
+            } 
+            
+            // 3. AKCIJA / OSTALO
+            else {
+                if (!PARENTHETICAL_LINE_REGEX.test(line)) {
+                    finishDialogueSegment();
+                }
             }
         }
-        finishDialogueSegment(); // Zatvori zadnji
+        finishDialogueSegment();
         return structure;
     };
 
