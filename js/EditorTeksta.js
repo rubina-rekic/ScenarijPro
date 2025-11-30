@@ -15,7 +15,8 @@ let EditorTeksta = function (divRef) {
 
     const EMPTY_LINE_REGEX = /^\s*$/;
 
-    const SCENE_HEADING_REGEX = /^(INT\.|EXT\.)[^-\r\n]+-\s(DAY|NIGHT|AFTERNOON|MORNING|EVENING)$/i;
+    // Fleksibilniji regex: prepoznaje bilo koju scenu koja počinje sa INT. ili EXT.
+    const SCENE_HEADING_REGEX = /^(INT\.|EXT\.)[^\r\n]+$/i;
 
     const ROLE_NAME_REGEX = /^[A-Z\s]+$/;
 
@@ -52,15 +53,22 @@ let EditorTeksta = function (divRef) {
         let dialogueReplicaIndex = 0; // Broji replike unutar scene
 
         const finishDialogueSegment = () => {
-            if (currentDialogueSegment && currentDialogueSegment.blocks.length > 0) {
-                // Ako je u segmentu samo jedna uloga, to je monolog, ali se i dalje računa
+            // Dodaj segment samo ako ima barem jedan blok (ulogu) i currentScene postoji
+            if (
+                currentDialogueSegment &&
+                Array.isArray(currentDialogueSegment.blocks) &&
+                currentDialogueSegment.blocks.length > 0 &&
+                currentScene
+            ) {
                 currentScene.dialogueSegments.push(currentDialogueSegment);
             }
             currentDialogueSegment = null;
         };
 
         const startNewDialogueSegment = () => {
-            finishDialogueSegment();
+            if (currentDialogueSegment && currentDialogueSegment.blocks && currentDialogueSegment.blocks.length > 0) {
+                finishDialogueSegment();
+            }
             currentDialogueSegment = { blocks: [] };
         };
 
@@ -124,7 +132,7 @@ let EditorTeksta = function (divRef) {
                 const roleName = line.trim();
                 const dialogueLines = []; // Samo čiste linije govora
 
-                // Traženje prve ne-prazne linije nakon uloge
+                // Traženje prve ne-prazne linije nakon uloge koja NIJE samo scenska napomena
                 let j = i + 1;
                 let dialogueStartLine = null;
                 let dialogueStartIndex = -1;
@@ -132,9 +140,15 @@ let EditorTeksta = function (divRef) {
                 while (j < lines.length) {
                     const currentLine = lines[j];
                     if (!EMPTY_LINE_REGEX.test(currentLine)) {
-                        dialogueStartLine = currentLine.trim();
+                        const trimmedLine = currentLine.trim();
+                        // Ako je samo scenska napomena, nastavi tražiti
+                        if (PARENTHETICAL_LINE_REGEX.test(trimmedLine)) {
+                            j++;
+                            continue;
+                        }
+                        dialogueStartLine = trimmedLine;
                         dialogueStartIndex = j;
-                        break; // Našli smo prvu ne-praznu liniju
+                        break; // Našli smo prvu ne-praznu liniju koja nije samo napomena
                     }
                     j++;
                 }
@@ -229,10 +243,16 @@ let EditorTeksta = function (divRef) {
             }
 
 
-            if (!PARENTHETICAL_LINE_REGEX.test(line)) {
-                // Ako nije uloga, nije scena, nije prazna linija i nije samo u zagradama -> to je AKCIJSKI SEGMENT
+            if (
+                !SCENE_HEADING_REGEX.test(line) &&
+                !ROLE_NAME_REGEX.test(line) &&
+                !EMPTY_LINE_REGEX.test(line) &&
+                !PARENTHETICAL_LINE_REGEX.test(line)
+            ) {
+                // Prava akcijska linija prekida segment
                 lastRole = null;
-                finishDialogueSegment(); // Akcija prekida dijalog segment
+                finishDialogueSegment();
+                // Novi segment se kreira tek kad naiđe nova validna uloga s govorom
             }
             // Linija u zagradama NE prekida dijalog segment i NE resetira lastRole
         }
@@ -545,24 +565,12 @@ let EditorTeksta = function (divRef) {
             let segmentIndex = 0;
             for (const segment of scene.dialogueSegments) {
                 if (segment.blocks.length > 0) {
-                    segmentIndex++;
-
-                    const rolesInSegment = new Map();
-                    const rolesOrder = [];
-
-                    for (const block of segment.blocks) {
-                        const roleName = block.role;
-                        if (!rolesInSegment.has(roleName)) {
-                            rolesInSegment.set(roleName, true);
-                            rolesOrder.push(roleName);
-                        }
-                    }
-
                     groups.push({
                         scena: scene.title,
-                        segment: segmentIndex,
-                        uloge: rolesOrder
+                        segment: segmentIndex + 1,
+                        uloge: segment.blocks.map(b => b.role)
                     });
+                    segmentIndex++;
                 }
             }
         }
