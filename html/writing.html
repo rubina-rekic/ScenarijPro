@@ -23,9 +23,22 @@
 
     <div id="editor-container">
 
-       
-
         <header id="editor-header">
+           <div id="editor-actions">
+   
+            <button id="btnBold" class="format-btn">Bold</button>
+            <button id="btnItalic" class="format-btn">Italic</button>
+            <button id="btnUnderline" class="format-btn">Underline</button>
+            <button id="btnBrojRijeci" class="analysis-btn">Broj Riječi</button>
+            <button id="btnDajUloge" class="analysis-btn">Daj Uloge</button>
+            <button id="btnPogresnaUloga" class="analysis-btn">Pogrešne Uloge</button>
+            <button id="btnBrojLinijaTeksta" class="analysis-btn">Broj Linija Uloge</button> 
+            <button id="btnScenarijUloge" class="analysis-btn">Scenarij Uloge</button>
+            <button id="btnGrupisiUloge" class="analysis-btn">Grupiši Uloge</button>
+            </div>
+
+         <div id="poruke">
+          </div>
 
            
 
@@ -177,7 +190,7 @@
 
             <section id="main-editor">
 
-                <div class="editor-paper">
+               <div id="divEditor" class="editor-paper" contenteditable="true">
 
                    
 
@@ -224,5 +237,7 @@
         </main>
 
     </div>
+    <script src="../js/EditorTeksta.js"></script>
+    <script src="../js/editor.js"></script>
 </body>
 </html>

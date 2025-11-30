@@ -453,3 +453,78 @@ body {
     }
 
 }
+
+
+/* --- NOVI STILOVI ZA AKCIJE I PORUKE --- */
+
+#editor-actions {
+    /* Premjestit ćemo ga ispod headera, iznad main-edita, na cijelu širinu */
+    background-color: #f8f9fb; /* Svjetlija pozadina */
+    padding: 15px 30px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap; /* Da se dugmad prelamaju na malim ekranima */
+}
+
+/* Stilovi za dugmad za formatiranje i analizu */
+.format-btn, .analysis-btn {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s, color 0.2s;
+    font-size: 0.9em;
+}
+
+.format-btn {
+    background-color: #e0e0e0;
+    color: #333;
+}
+
+.format-btn:hover {
+    background-color: #d0d0d0;
+}
+
+.analysis-btn {
+    background-color: #5B3FFF; /* Primarna boja */
+    color: white;
+}
+
+.analysis-btn:hover {
+    background-color: #4a30e8;
+}
+
+
+/* --- ZA PRIKAZ REZULTATA--- */
+
+#poruke {
+    
+    padding: 15px 30px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #eee;
+    font-family: 'Inter', sans-serif;
+    min-height: 50px; 
+}
+
+#poruke h2 {
+    font-size: 1em;
+    font-weight: 600;
+    margin: 0 0 5px 0;
+    color: #5B3FFF; 
+}
+
+#poruke pre {
+    white-space: pre-wrap;
+    word-break: break-all;
+    background-color: #f0f0f0;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    font-size: 0.85em; 
+    max-height: 300px; 
+    overflow-y: auto;
+}
+
+
