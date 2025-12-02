@@ -154,7 +154,7 @@ let EditorTeksta = function (divRef) {
     let dajBrojRijeci = function () {
         const text = editorDiv.innerText || "";
         const allWords = text.split(WORD_SPLIT_REGEX);
-       
+
         const ukupno = allWords.filter(w => VALID_WORD_CHECK.test(w) && !/^\d+$/.test(w)).length;
 
         let boldiranih = 0;
@@ -326,7 +326,7 @@ let EditorTeksta = function (divRef) {
             });
         });
 
-
+    
         let mergedBlocks = [];
         if (allBlocks.length > 0) {
             let currentMerge = allBlocks[0];
@@ -341,7 +341,7 @@ let EditorTeksta = function (divRef) {
                     // Spoji tekst replike novim redom
                     currentMerge.replica += "\n" + next.replica;
                 } else {
-                    // Gurni stari i postavi novi za praćenje
+
                     mergedBlocks.push(currentMerge);
                     currentMerge = next;
                 }
@@ -351,44 +351,58 @@ let EditorTeksta = function (divRef) {
             mergedBlocks = allBlocks;
         }
 
+        const indexedBlocks = [];
+        let currentSceneTitle = null;
+        let sceneReplicaIndex = 0; 
 
-        for (let i = 0; i < mergedBlocks.length; i++) {
-            const curr = mergedBlocks[i];
+        mergedBlocks.forEach(block => {
+            if (block.sceneTitle !== currentSceneTitle) {
+                currentSceneTitle = block.sceneTitle;
+                sceneReplicaIndex = 0;
+            }
+            sceneReplicaIndex++;
+            indexedBlocks.push({
+                ...block,
+                sceneReplicaIndex: sceneReplicaIndex 
+            });
+        });
 
-            // Provjera da li je to tražena uloga
+
+        for (let i = 0; i < indexedBlocks.length; i++) {
+            const curr = indexedBlocks[i]; // Sada curr sadrži sceneReplicaIndex
+
             if (curr.role.toUpperCase() === targetRole) {
 
                 let prevObj = null;
                 let nextObj = null;
 
                 if (i > 0) {
-                    const prev = mergedBlocks[i - 1];
-                    // Mora biti ista scena i isti segment da bi bio dio dijaloga
+                    const prev = indexedBlocks[i - 1];
                     if (prev.sceneTitle === curr.sceneTitle && prev.segmentId === curr.segmentId) {
                         prevObj = {
-                            uloga: prev.role,
+                            uloga: prev.role.toUpperCase(),
                             linije: prev.replica
                         };
                     }
                 }
 
                 // SLJEDEĆI
-                if (i < mergedBlocks.length - 1) {
-                    const next = mergedBlocks[i + 1];
+                if (i < indexedBlocks.length - 1) {
+                    const next = indexedBlocks[i + 1];
                     if (next.sceneTitle === curr.sceneTitle && next.segmentId === curr.segmentId) {
                         nextObj = {
-                            uloga: next.role,
+                            uloga: next.role.toUpperCase(),
                             linije: next.replica
                         };
                     }
                 }
 
                 result.push({
-                    scena: curr.sceneTitle || "SCENE 1", // Fallback ako nema naslova
-                    pozicijaUTekstu: curr.replicaIndex, // Ostavljamo originalni indeks prvog bloka
+                    scena: curr.sceneTitle || "SCENE 1",
+                    pozicijaUTekstu: curr.sceneReplicaIndex, 
                     prethodni: prevObj,
                     trenutni: {
-                        uloga: curr.role,
+                        uloga: curr.role.toUpperCase(),
                         linije: curr.replica
                     },
                     sljedeci: nextObj

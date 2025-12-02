@@ -48,7 +48,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
             : '<h2>Formatiranje:</h2><p style="color: orange;">Nije bilo selekcije ili selekcija nije unutar editora.</p>';
     });
     
-    //  --- Povezivanje dugmadi za ANALIZU ---
 
     document.getElementById('btnBrojRijeci').addEventListener('click', () => {
         const rezultat = editor.dajBrojRijeci();
