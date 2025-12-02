@@ -149,7 +149,7 @@ body {
 
     display: flex;
 
-    min-height: calc(100vh - 65px);
+   min-height: calc(100vh - 165px);
 
 }
 
@@ -455,11 +455,11 @@ body {
 }
 
 
-/* --- NOVI STILOVI ZA AKCIJE I PORUKE --- */
+
 
 #editor-actions {
-    /* Premjestit ćemo ga ispod headera, iznad main-edita, na cijelu širinu */
-    background-color: #f8f9fb; /* Svjetlija pozadina */
+    /*  ispod headera, iznad main-edita, na cijelu širinu */
+    background-color: #f8f9fb; 
     padding: 15px 30px;
     border-bottom: 1px solid #ddd;
     display: flex;
@@ -497,16 +497,24 @@ body {
 }
 
 
-/* --- ZA PRIKAZ REZULTATA--- */
+
 
 #poruke {
     
-    padding: 15px 30px;
+    padding: 0 30px; 
     background-color: #ffffff;
-    border-bottom: 1px solid #eee;
+    
+    border-bottom: none; 
     font-family: 'Inter', sans-serif;
-    min-height: 50px; 
+    min-height: 0;
 }
+
+#poruke:not(:empty) {
+    padding: 15px 30px;
+    border-top: 1px solid #eee; 
+    margin-top: 10px;
+}
+
 
 #poruke h2 {
     font-size: 1em;
@@ -528,3 +536,9 @@ body {
 }
 
 
+#editor-controls {
+    position: sticky; 
+    top: 65px; 
+    z-index: 90; 
+    background-color: #f8f9fb; 
+}

@@ -151,11 +151,10 @@ let EditorTeksta = function (divRef) {
         return structure;
     };
 
-    // --- METODE ---
     let dajBrojRijeci = function () {
         const text = editorDiv.innerText || "";
         const allWords = text.split(WORD_SPLIT_REGEX);
-        // 1. Ukupan broj riječi (ovo ti je već bilo dobro)
+       
         const ukupno = allWords.filter(w => VALID_WORD_CHECK.test(w) && !/^\d+$/.test(w)).length;
 
         let boldiranih = 0;
@@ -259,7 +258,6 @@ let EditorTeksta = function (divRef) {
         const roles = Object.keys(roleCounts);
         const suspects = new Set();
 
-        // Levenshteinova distanca funkcija
         const levenshtein = (a, b) => {
             const matrix = [];
             for (let i = 0; i <= b.length; i++) matrix[i] = [i];
@@ -363,7 +361,6 @@ let EditorTeksta = function (divRef) {
                 let prevObj = null;
                 let nextObj = null;
 
-                // PRETHODNI (Gledamo unutar mergedBlocks)
                 if (i > 0) {
                     const prev = mergedBlocks[i - 1];
                     // Mora biti ista scena i isti segment da bi bio dio dijaloga
