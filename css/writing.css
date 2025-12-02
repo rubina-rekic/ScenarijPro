@@ -458,7 +458,7 @@ body {
 
 
 #editor-actions {
-    /*  ispod headera, iznad main-edita, na cijelu širinu */
+
     background-color: #f8f9fb; 
     padding: 15px 30px;
     border-bottom: 1px solid #ddd;
@@ -467,7 +467,7 @@ body {
     flex-wrap: wrap; /* Da se dugmad prelamaju na malim ekranima */
 }
 
-/* Stilovi za dugmad za formatiranje i analizu */
+
 .format-btn, .analysis-btn {
     padding: 8px 12px;
     border: none;

@@ -1,5 +1,5 @@
 let EditorTeksta = function (divRef) {
-    // --- VALIDACIJA KONSTRUKTORA ---
+   
     if (!(divRef instanceof HTMLElement) || divRef.tagName !== 'DIV') {
         throw new Error("Pogresan tip elementa!");
     }
@@ -60,7 +60,7 @@ let EditorTeksta = function (divRef) {
 
             if (EMPTY_LINE_REGEX.test(line)) continue;
 
-            // 1. SCENA
+            // SCENA
             if (SCENE_HEADING_REGEX.test(line)) {
                 finishDialogueSegment();
                 // Ako je prva scena prazna, pregazi je, inače nova
@@ -80,9 +80,9 @@ let EditorTeksta = function (divRef) {
                 continue;
             }
 
-            // 2. ULOGA
+         
             if (ROLE_NAME_REGEX.test(line)) {
-                // --- IZMJENA: Tražimo prvu liniju govora, preskačući prazne ---
+                
                 let speechStartIndex = i + 1;
                 while (speechStartIndex < lines.length && EMPTY_LINE_REGEX.test(lines[speechStartIndex])) {
                     speechStartIndex++;
@@ -92,7 +92,6 @@ let EditorTeksta = function (divRef) {
                     let nextLineRaw = lines[speechStartIndex];
                     let nextTrim = nextLineRaw.trim();
 
-                    // Provjera da li je ta linija validan govor (nije scena, nije druga uloga)
                     if (!SCENE_HEADING_REGEX.test(nextTrim) && !ROLE_NAME_REGEX.test(nextTrim)) {
 
                         // Skupljamo govor
@@ -140,7 +139,6 @@ let EditorTeksta = function (divRef) {
                 finishDialogueSegment();
             }
 
-            // 3. AKCIJA / OSTALO
             else {
                 if (!PARENTHETICAL_LINE_REGEX.test(line)) {
                     finishDialogueSegment();
