@@ -1,0 +1,11 @@
+{
+  "id": 1,
+  "title": "Moj Prvi Scenario",
+  "content": [
+    {
+      "lineId": 1,
+      "nextLineId": null,
+      "text": "Ovo je početni tekst iz datoteke."
+    }
+  ]
+}
