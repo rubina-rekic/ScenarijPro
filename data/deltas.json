@@ -1,1 +1,66 @@
-[]
+[
+  {
+    "scenarioId": 1,
+    "type": "char_rename",
+    "oldName": "hagrid",
+    "newName": "rubina",
+    "timestamp": 1766326465
+  },
+  {
+    "scenarioId": 1,
+    "type": "char_rename",
+    "oldName": "rubina",
+    "newName": "hagrid",
+    "timestamp": 1766326474
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 1,
+    "nextLineId": null,
+    "content": "Ovo je početni tekst iz datoteke.hshshhshshjiqjiwwuhuwdhdwudhuhduhhbjbcncdncncdjdcjjndjccnjcn",
+    "timestamp": 1766326551
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 103,
+    "content": "DUMBLEDORE: It's a strange old business.xx",
+    "timestamp": 1766326879
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 102,
+    "content": "The quiet street is shrssssssouded in mist.",
+    "timestamp": 1766327017
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 102,
+    "content": "The quiet street is shrouded hshsshhin mist.",
+    "timestamp": 1766327121
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 102,
+    "content": "The quiet street is shrouded in mist.hhdh",
+    "timestamp": 1766327203
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 103,
+    "content": "DUMBLEDORE: It's a strange old businxoxoess.",
+    "timestamp": 1766327666
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 101,
+    "content": "EXT. PRIVET DRIVE - NIGHTruibna",
+    "timestamp": 1766327677
+  }
+]

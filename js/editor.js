@@ -3,9 +3,33 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const porukeDiv = document.getElementById("poruke");
     let editor;
 
+
     // --- NOVO: Varijable za praćenje stanja ---
     const currentUserId = 1; // Ovo bi u realnoj aplikaciji bio ID prijavljenog korisnika
     const currentScenarioId = 1; // ID scenarija koji učitavamo
+    // Varijabla za praćenje trenutno zaključane linije na frontendu
+let trenutnoZakljucanaLinijaId = null;
+
+divEditor.addEventListener('click', (e) => {
+    const p = e.target.closest('p');
+    if (!p) return;
+
+    const lineId = p.getAttribute('data-line-id');
+
+    // Pozivamo lockLine rute
+    PoziviAjax.lockLine(currentScenarioId, lineId, currentUserId, (status, podaci) => {
+        if (status === 200) {
+            // Skinemo editabilnost sa svih, pa stavimo samo na ovaj
+            divEditor.querySelectorAll('p').forEach(el => el.contentEditable = false);
+            p.contentEditable = true;
+            p.focus();
+            trenutnoZakljucanaLinijaId = lineId;
+            porukeDiv.innerHTML = `<p style="color: blue;">Linija ${lineId} zaključana i spremna za uređivanje.</p>`;
+        } else {
+            porukeDiv.innerHTML = `<p style="color: red;">${podaci.message}</p>`;
+        }
+    });
+});
 
     // --- IZMJENA: Inicijalizacija editora ide unutar funkcije za učitavanje ---
     function inicijalizirajSistem() {
@@ -32,31 +56,47 @@ document.addEventListener('DOMContentLoaded', (event) => {
     // Pokreni sve
     inicijalizirajSistem();
 
-    // --- NOVO: Dugme za SPASI (dodaj ga u HTML ako već ne postoji) ---
-    // Pretpostavimo da u HTML-u imaš <button id="btnSpasi">Spasi</button>
-    const btnSpasi = document.getElementById('btnSpasi');
-    if(btnSpasi) {
+const btnSpasi = document.getElementById('btnSpasi'); 
+    if (btnSpasi) {
         btnSpasi.addEventListener('click', () => {
-            // Uzimamo trenutni tekst iz editora
-            const noveLinije = Array.from(divEditor.querySelectorAll('p')).map(p => p.innerText);
+            if (!trenutnoZakljucanaLinijaId) {
+                porukeDiv.innerHTML = '<p style="color: orange;">Prvo kliknite na liniju koju želite urediti!</p>';
+                return;
+            }
 
-            // 1. Pokušaj zaključati prvu liniju (za demo)
-            PoziviAjax.lockLine(currentScenarioId, 1, currentUserId, (status, podaci) => {
+            const pElement = divEditor.querySelector(`p[data-line-id="${trenutnoZakljucanaLinijaId}"]`);
+            if (!pElement) return;
+
+            // Uzimamo tekst iz paragrafa
+            const tekstZaSlanje = [pElement.innerText]; 
+
+            // Pozivamo AJAX za spašavanje
+            PoziviAjax.updateLine(currentScenarioId, trenutnoZakljucanaLinijaId, currentUserId, tekstZaSlanje, (status, podaci) => {
                 if (status === 200) {
-                    // 2. Ako je zaključano, šalji update
-                    PoziviAjax.updateLine(currentScenarioId, 1, currentUserId, noveLinije, (uStatus, uPodaci) => {
-                        if (uStatus === 200) {
-                            porukeDiv.innerHTML = '<p style="color: green;">Promjene su uspješno spašene na server!</p>';
-                        }
-                    });
+                    // 1. Odmah dajemo vizuelnu povratnu informaciju
+                    porukeDiv.innerHTML = '<p style="color: green; font-weight: bold;">Promjene su trajno spremljene na server!</p>';
+                    
+                    // 2. "Zaključavamo" paragraf vizuelno odmah da korisnik vidi da je gotovo
+                    pElement.contentEditable = false;
+                    pElement.style.backgroundColor = "transparent"; 
+                    
+                    // Spremimo ID u privremenu varijablu pa resetujemo globalnu
+                    const staraId = trenutnoZakljucanaLinijaId;
+                    trenutnoZakljucanaLinijaId = null;
+
+                    // 3. ČEKAMO 1 sekundu prije osvježavanja
+                    // Ovo omogućava serveru da završi fs.writeFile, a korisniku da vidi poruku uspjeha
+                    setTimeout(() => {
+                        inicijalizirajSistem(); 
+                    }, 1000); 
+
                 } else {
-                    porukeDiv.innerHTML = `<p style="color: red;">Spašavanje nije uspjelo: ${podaci.message}</p>`;
+                    porukeDiv.innerHTML = `<p style="color: red;">Greška: ${podaci.message || 'Neuspješno spašavanje'}</p>`;
                 }
             });
         });
     }
-
-    // --- Ostatak tvog koda (btnBold, btnItalic, itd.) ostaje ISTI ---
+ 
     const prikaziRezultat = (naslov, rezultat) => {
         const output = Array.isArray(rezultat) || typeof rezultat === 'object' && rezultat !== null
             ? JSON.stringify(rezultat, null, 2)
@@ -129,4 +169,34 @@ document.addEventListener('DOMContentLoaded', (event) => {
         const rezultat = editor.grupisiUloge();
         prikaziRezultat("Rezultat metode: grupisiUloge()", rezultat);
     });
+    // --- NOVO: Dugme za promjenu imena lika (Spirala 3) ---
+    const btnPromijeniLika = document.getElementById('btnPromijeniLika');
+    if (btnPromijeniLika) {
+        btnPromijeniLika.addEventListener('click', () => {
+            const stariLik = prompt("Unesite IME LIKA koje želite promijeniti (npr. HAGRID):");
+            if (!stariLik) return;
+            
+            const noviLik = prompt(`Unesite NOVO IME za lika "${stariLik}":`);
+            if (!noviLik) return;
+
+            // 1. Korak: Zaključaj ime lika na serveru
+            PoziviAjax.lockCharacter(currentScenarioId, stariLik, currentUserId, (status, podaci) => {
+                if (status === 200) {
+                    // 2. Korak: Ako je zaključavanje uspjelo, pošalji zahtjev za promjenu
+                    PoziviAjax.updateCharacter(currentScenarioId, currentUserId, stariLik, noviLik, (uStatus, uPodaci) => {
+                        if (uStatus === 200) {
+                            porukeDiv.innerHTML = `<p style="color: green;">Lik "${stariLik}" je uspješno promijenjen u "${noviLik}" u cijelom scenariju!</p>`;
+                            // Osvježi editor da se vide nova imena
+                            inicijalizirajSistem(); 
+                        } else {
+                            porukeDiv.innerHTML = `<p style="color: red;">Greška pri ažuriranju: ${uPodaci.message}</p>`;
+                        }
+                    });
+                } else {
+                    // Ako je neko drugi već zaključao tog lika (Conflict 409)
+                    porukeDiv.innerHTML = `<p style="color: red;">Greška: ${podaci.message}</p>`;
+                }
+            });
+        });
+    }
 });

@@ -1,11 +1,17 @@
 {
-  "id": 1,
-  "title": "Moj Prvi Scenario",
+  "title": "HARRY POTTER",
   "content": [
     {
-      "lineId": 1,
-      "nextLineId": null,
-      "text": "Ovo je početni tekst iz datoteke."
+      "lineId": 101,
+      "text": "EXT. PRIVET DRIVE - NIGHTruibna"
+    },
+    {
+      "lineId": 102,
+      "text": "The quiet street is shrouded in mist."
+    },
+    {
+      "lineId": 103,
+      "text": "DUMBLEDORE: It's a strange old businxoxoess."
     }
   ]
 }
