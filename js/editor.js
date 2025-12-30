@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
 
     // --- NOVO: Varijable za praćenje stanja ---
-    const currentUserId = 1; // Ovo bi u realnoj aplikaciji bio ID prijavljenog korisnika
+    const currentUserId = Math.floor(Math.random() * 10000) + 1;
     const currentScenarioId = 1; // ID scenarija koji učitavamo
     // Varijabla za praćenje trenutno zaključane linije na frontendu
 let trenutnoZakljucanaLinijaId = null;

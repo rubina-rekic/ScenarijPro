@@ -62,5 +62,68 @@
     "lineId": 101,
     "content": "EXT. PRIVET DRIVE - NIGHTruibna",
     "timestamp": 1766327677
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 101,
+    "content": "EXT. PRIVET DRIVE - NIGHTdruibna",
+    "timestamp": 1767096185
+  },
+  {
+    "scenarioId": 1,
+    "type": "char_rename",
+    "oldName": "dumbledore",
+    "newName": "rubina",
+    "timestamp": 1767096201
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 102,
+    "content": "The quiet street is shrouded in mistt.",
+    "timestamp": 1767096282
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 102,
+    "content": "The quiet street is shrouded inn mistt.",
+    "timestamp": 1767096401
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 103,
+    "content": "DUMBLEDORE:",
+    "timestamp": 1767096585
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 101,
+    "content": "EXT. PRIVET DRIVE - NIGHTdruibnaa",
+    "timestamp": 1767098486
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 103,
+    "content": "DUMBLEDORE:nista proba",
+    "timestamp": 1767098642
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 102,
+    "content": "The quiet street is shrouded inn mistt..",
+    "timestamp": 1767098695
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 102,
+    "content": "The quiet street is shrouded inn mistt...",
+    "timestamp": 1767099814
   }
 ]

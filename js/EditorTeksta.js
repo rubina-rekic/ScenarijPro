@@ -307,51 +307,44 @@ let EditorTeksta = function (divRef) {
         return count;
     };
 
-    let scenarijUloge = function (uloga) {
+ let scenarijUloge = function (uloga) {
         const structure = parseScenarioStructure();
         const result = [];
-        const targetRole = uloga.toUpperCase(); // Case-insensitive poređenje
+        const targetRole = uloga.toUpperCase();
 
         let allBlocks = [];
         structure.forEach(scene => {
             scene.dialogueSegments.forEach(segment => {
                 segment.blocks.forEach(block => {
-                    allBlocks.push({
-                        ...block,
-                        sceneObj: scene
-                    });
+                    allBlocks.push({ ...block });
                 });
             });
         });
 
-    
         let mergedBlocks = [];
         if (allBlocks.length > 0) {
-            let currentMerge = allBlocks[0];
+            let current = { ...allBlocks[0] };
+
             for (let i = 1; i < allBlocks.length; i++) {
-                let next = allBlocks[i];
+                const next = allBlocks[i];
 
-
-                if (next.role === currentMerge.role &&
-                    next.sceneTitle === currentMerge.sceneTitle &&
-                    next.segmentId === currentMerge.segmentId) {
-
-                    // Spoji tekst replike novim redom
-                    currentMerge.replica += "\n" + next.replica;
+                if (
+                    next.role === current.role &&
+                    next.sceneTitle === current.sceneTitle &&
+                    next.segmentId === current.segmentId
+                ) {
+                    current.replica += "\n" + next.replica;
                 } else {
-
-                    mergedBlocks.push(currentMerge);
-                    currentMerge = next;
+                    mergedBlocks.push(current);
+                    current = { ...next };
                 }
             }
-            mergedBlocks.push(currentMerge); // Gurni zadnji
-        } else {
-            mergedBlocks = allBlocks;
+            mergedBlocks.push(current);
         }
 
-        const indexedBlocks = [];
+        let indexedBlocks = [];
         let currentSceneTitle = null;
-        let sceneReplicaIndex = 0; 
+        let sceneReplicaIndex = 0;
 
         mergedBlocks.forEach(block => {
             if (block.sceneTitle !== currentSceneTitle) {
@@ -361,52 +354,56 @@ let EditorTeksta = function (divRef) {
             sceneReplicaIndex++;
             indexedBlocks.push({
                 ...block,
-                sceneReplicaIndex: sceneReplicaIndex 
+                sceneReplicaIndex
             });
         });
 
-
         for (let i = 0; i < indexedBlocks.length; i++) {
-            const curr = indexedBlocks[i]; // Sada curr sadrži sceneReplicaIndex
+            const curr = indexedBlocks[i];
 
-            if (curr.role.toUpperCase() === targetRole) {
+            if (curr.role.toUpperCase() !== targetRole) continue;
 
-                let prevObj = null;
-                let nextObj = null;
+            let prevObj = null;
+            let nextObj = null;
 
-                if (i > 0) {
-                    const prev = indexedBlocks[i - 1];
-                    if (prev.sceneTitle === curr.sceneTitle && prev.segmentId === curr.segmentId) {
-                        prevObj = {
-                            uloga: prev.role.toUpperCase(),
-                            linije: prev.replica
-                        };
-                    }
+            if (i > 0) {
+                const prev = indexedBlocks[i - 1];
+                if (
+                    prev.sceneTitle === curr.sceneTitle &&
+                    prev.segmentId === curr.segmentId
+                ) {
+                    prevObj = {
+                        uloga: prev.role.toUpperCase(),
+                        linije: prev.replica.split('\n')
+                    };
                 }
-
-                // SLJEDEĆI
-                if (i < indexedBlocks.length - 1) {
-                    const next = indexedBlocks[i + 1];
-                    if (next.sceneTitle === curr.sceneTitle && next.segmentId === curr.segmentId) {
-                        nextObj = {
-                            uloga: next.role.toUpperCase(),
-                            linije: next.replica
-                        };
-                    }
-                }
-
-                result.push({
-                    scena: curr.sceneTitle || "SCENE 1",
-                    pozicijaUTekstu: curr.sceneReplicaIndex, 
-                    prethodni: prevObj,
-                    trenutni: {
-                        uloga: curr.role.toUpperCase(),
-                        linije: curr.replica
-                    },
-                    sljedeci: nextObj
-                });
             }
+
+            if (i < indexedBlocks.length - 1) {
+                const next = indexedBlocks[i + 1];
+                if (
+                    next.sceneTitle === curr.sceneTitle &&
+                    next.segmentId === curr.segmentId
+                ) {
+                    nextObj = {
+                        uloga: next.role.toUpperCase(),
+                        linije: next.replica.split('\n')
+                    };
+                }
+            }
+
+            result.push({
+                scena: curr.sceneTitle || "SCENE 1",
+                pozicijaUTekstu: curr.sceneReplicaIndex,
+                prethodni: prevObj,
+                trenutni: {
+                    uloga: curr.role.toUpperCase(),
+                    linije: curr.replica.split('\n')
+                },
+                sljedeci: nextObj
+            });
         }
+
         return result;
     };
 

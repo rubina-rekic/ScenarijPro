@@ -35,39 +35,62 @@ async function writeScenario(id, scenario) {
 app.post('/api/scenarios', async (req, res) => {
     const title = req.body.title || "Neimenovani scenarij";
     const files = await fs.readdir(SCENARIOS_DIR).catch(() => []);
-    const id = files.length + 1;
-    
+
+    const ids = files.map(file => {
+        const match = file.match(/scenario-(\d+)\.json/);
+        return match ? parseInt(match[1]) : 0;
+    });
+
+    const id = (ids.length > 0 ? Math.max(...ids) : 0) + 1;
+
     const newScenario = {
         id: id,
         title: title,
         content: [{ lineId: 1, nextLineId: null, text: "" }]
     };
-    
-   await writeScenario(id, newScenario);
+
+    await writeScenario(id, newScenario);
     res.status(200).json(newScenario);
 });
 
 // Ruta: Zaključavanje linije
+// Ruta: Zaključavanje linije (DEBUG VERZIJA)
 app.post('/api/scenarios/:scenarioId/lines/:lineId/lock', async (req, res) => {
-    const { scenarioId, lineId } = req.params;
-    const { userId } = req.body;
-    
+    // 1. Sve pretvaramo u Integere da budemo sigurni
+    const scenarioId = parseInt(req.params.scenarioId);
+    const lineId = parseInt(req.params.lineId);
+    const userId = parseInt(req.body.userId);
+
+    console.log(`--------------------------------------------------`);
+    console.log(`[LOCK POKUŠAJ] UserID: ${userId} --> Želi Scenario: ${scenarioId}, Linija: ${lineId}`);
+    console.log(`[TRENUTNI LOCKOVI PRIJE]:`, JSON.stringify(lineLocks));
+
     const scenario = await readScenario(scenarioId);
     if (!scenario) return res.status(404).json({ message: "Scenario ne postoji!" });
-    
-    const line = scenario.content.find(l => l.lineId == lineId);
+
+    // Pazi: scenario.content ima lineId kao broj, pa je poređenje sada sigurno (===)
+    const line = scenario.content.find(l => l.lineId === lineId);
     if (!line) return res.status(404).json({ message: "Linija ne postoji!" });
 
-    // Provjera da li je neko drugi zaključao
-    const existingLock = lineLocks.find(l => l.scenarioId == scenarioId && l.lineId == lineId);
-    if (existingLock && existingLock.userId != userId) {
-        return res.status(409).json({ message: "Linija je vec zakljucana!" });
+    // 2. Provjera da li je neko drugi zaključao
+    const existingLock = lineLocks.find(l => l.scenarioId === scenarioId && l.lineId === lineId);
+
+    if (existingLock) {
+        console.log(`[PROVJERA] Postoji lock: User ${existingLock.userId}`);
+        
+        if (existingLock.userId !== userId) {
+            console.log(`🛑 ODBIJENO: Lock drži User ${existingLock.userId}, a traži User ${userId}`);
+            return res.status(409).json({ message: "Linija je vec zakljucana!" });
+        } else {
+            console.log(`⚠️ RE-LOCK: Isti korisnik produžava lock.`);
+        }
     }
 
-    // Svaki korisnik može imati samo jedan lock globalno - brišemo stare lockove ovog usera
-    lineLocks = lineLocks.filter(l => l.userId != userId);
+    // 3. Brisanje starih lockova tog korisnika i dodavanje novog
+    lineLocks = lineLocks.filter(l => l.userId !== userId);
     lineLocks.push({ userId, scenarioId, lineId });
 
+    console.log(`✅ ODOBRENO. Novi lockovi:`, JSON.stringify(lineLocks));
     res.status(200).json({ message: "Linija je uspjesno zakljucana!" });
 });
 
@@ -89,7 +112,7 @@ app.put('/api/scenarios/:scenarioId/lines/:lineId', async (req, res) => {
 
     let currentLineIndex = scenario.content.findIndex(l => l.lineId == lineId);
     if (currentLineIndex === -1) return res.status(404).json({ message: "Linija ne postoji!" });
-    
+
     const originalNextLineId = scenario.content[currentLineIndex].nextLineId;
 
     // 2. Logika prelamanja (20 riječi) za svaki string u nizu
@@ -124,7 +147,7 @@ app.put('/api/scenarios/:scenarioId/lines/:lineId', async (req, res) => {
 
     // 4. Ažuriranje sadržaja i deltas.json
     scenario.content.splice(currentLineIndex, 1, ...newContentParts);
-    
+
     const timestamp = Math.floor(Date.now() / 1000);
     const newDeltas = newContentParts.map(lp => ({
         scenarioId: parseInt(scenarioId),
