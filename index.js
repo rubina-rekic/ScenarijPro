@@ -54,16 +54,11 @@ app.post('/api/scenarios', async (req, res) => {
 });
 
 // Ruta: Zaključavanje linije
-// Ruta: Zaključavanje linije (DEBUG VERZIJA)
 app.post('/api/scenarios/:scenarioId/lines/:lineId/lock', async (req, res) => {
     // 1. Sve pretvaramo u Integere da budemo sigurni
     const scenarioId = parseInt(req.params.scenarioId);
     const lineId = parseInt(req.params.lineId);
     const userId = parseInt(req.body.userId);
-
-    console.log(`--------------------------------------------------`);
-    console.log(`[LOCK POKUŠAJ] UserID: ${userId} --> Želi Scenario: ${scenarioId}, Linija: ${lineId}`);
-    console.log(`[TRENUTNI LOCKOVI PRIJE]:`, JSON.stringify(lineLocks));
 
     const scenario = await readScenario(scenarioId);
     if (!scenario) return res.status(404).json({ message: "Scenario ne postoji!" });
@@ -77,7 +72,7 @@ app.post('/api/scenarios/:scenarioId/lines/:lineId/lock', async (req, res) => {
 
     if (existingLock) {
         console.log(`[PROVJERA] Postoji lock: User ${existingLock.userId}`);
-        
+
         if (existingLock.userId !== userId) {
             console.log(`🛑 ODBIJENO: Lock drži User ${existingLock.userId}, a traži User ${userId}`);
             return res.status(409).json({ message: "Linija je vec zakljucana!" });
@@ -86,7 +81,6 @@ app.post('/api/scenarios/:scenarioId/lines/:lineId/lock', async (req, res) => {
         }
     }
 
-    // 3. Brisanje starih lockova tog korisnika i dodavanje novog
     lineLocks = lineLocks.filter(l => l.userId !== userId);
     lineLocks.push({ userId, scenarioId, lineId });
 
@@ -162,10 +156,28 @@ app.put('/api/scenarios/:scenarioId/lines/:lineId', async (req, res) => {
     deltas.push(...newDeltas);
     await fs.writeFile(DELTAS_FILE, JSON.stringify(deltas, null, 2));
 
+    // ... (tvoj postojeći kod ostaje isti do ovdje) ...
     await writeScenario(scenarioId, scenario);
-    lineLocks.splice(lockIndex, 1); // Otključaj
+
+    // --- POČETAK IZMJENE (SIGURNO BRISANJE) ---
+    // Moramo ponovo naći index jer se niz mogao promijeniti dok smo čekali (await)
+    // Također koristimo '==' zbog string/int razlika u parametrima
+    const finalLockIndex = lineLocks.findIndex(l =>
+        l.userId == userId &&
+        l.scenarioId == scenarioId &&
+        l.lineId == lineId
+    );
+
+    if (finalLockIndex !== -1) {
+        lineLocks.splice(finalLockIndex, 1);
+        console.log(`🔓 Lock uspješno obrisan nakon update-a za Usera ${userId}`);
+    } else {
+        console.log(`⚠️ Upozorenje: Lock nije pronađen pri brisanju (možda već obrisan?)`);
+    }
+   
 
     res.status(200).json({ message: "Linija je uspjesno azurirana!" });
+
 });
 
 // Ruta: Dobavljanje specifičnog scenarija
@@ -190,7 +202,7 @@ app.post('/api/scenarios/:scenarioId/characters/lock', async (req, res) => {
     res.status(200).json({ message: "Ime lika je uspjesno zakljucano!" });
 });
 
-// Ruta: Update imena lika (Globalno u scenariju)
+// Ruta: Update imena lika
 app.post('/api/scenarios/:scenarioId/characters/update', async (req, res) => {
     const { scenarioId } = req.params;
     const { userId, oldName, newName } = req.body;
@@ -198,32 +210,43 @@ app.post('/api/scenarios/:scenarioId/characters/update', async (req, res) => {
     const scenario = await readScenario(scenarioId);
     if (!scenario) return res.status(404).json({ message: "Scenario ne postoji!" });
 
-    // Provjera locka
     const lockIndex = charLocks.findIndex(c => c.userId == userId && c.scenarioId == scenarioId && c.characterName === oldName);
-    if (lockIndex === -1) return res.status(409).json({ message: "Ime lika nije zakljucano!" });
+    
+    if (lockIndex === -1) {
+        return res.status(409).json({ message: "Ime lika nije zakljucano ili nemate pravo izmjene!" });
+    }
 
-    // Zamjena imena (case-sensitive) u svim linijama
+    const regex = new RegExp(`\\b${oldName}\\b`, 'gi');
+
+    let brojIzmjena = 0;
+
     scenario.content.forEach(line => {
-        line.text = line.text.split(oldName).join(newName);
+        if (regex.test(line.text)) {
+            brojIzmjena++;
+            line.text = line.text.replace(regex, newName);
+        }
     });
 
-    // Spasi u deltas
+    console.log(`[RENAME] Zamijenjeno ${brojIzmjena} pojavljivanja imena "${oldName}" u "${newName}".`);
+
     const delta = {
         scenarioId: parseInt(scenarioId),
         type: "char_rename",
         oldName, newName,
         timestamp: Math.floor(Date.now() / 1000)
     };
+
     const deltas = JSON.parse(await fs.readFile(DELTAS_FILE, 'utf8').catch(() => "[]"));
     deltas.push(delta);
     await fs.writeFile(DELTAS_FILE, JSON.stringify(deltas, null, 2));
 
     await writeScenario(scenarioId, scenario);
-    charLocks.splice(lockIndex, 1); // Otključaj
-    res.status(200).json({ message: "Ime lika je uspjesno promijenjeno!" });
+    
+    charLocks.splice(lockIndex, 1); 
+    
+    res.status(200).json({ message: `Ime lika je uspjesno promijenjeno (${brojIzmjena} izmjena)!` });
 });
 
-// Ruta: Deltas (Promjene od timestampa)
 app.get('/api/scenarios/:scenarioId/deltas', async (req, res) => {
     const since = parseInt(req.query.since) || 0;
     const scenarioId = parseInt(req.params.scenarioId);

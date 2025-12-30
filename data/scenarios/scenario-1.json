@@ -1,17 +1,26 @@
 {
+  "id": 1,
   "title": "HARRY POTTER",
   "content": [
     {
       "lineId": 101,
-      "text": "EXT. PRIVET DRIVE - NIGHTdruibnaa"
+      "text": "rubina rubina iz konzolerr!rr",
+      "nextLineId": 102
     },
     {
       "lineId": 102,
-      "text": "The quiet street is shrouded inn mistt..."
+      "text": "Ovo je rubina koji ima vise od dvadeset rijeci da vidimoo hoce li ga server prelomiti u novu liniju kakoruibnannanannnanannanannnn",
+      "nextLineId": 104
+    },
+    {
+      "lineId": 104,
+      "text": "ne ne treba test test test.",
+      "nextLineId": 103
     },
     {
       "lineId": 103,
-      "text": "DUMBLEDORE:nista proba"
+      "text": "rubinaRR:nista proba xoxo",
+      "nextLineId": null
     }
   ]
 }

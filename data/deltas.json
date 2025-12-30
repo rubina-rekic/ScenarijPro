@@ -125,5 +125,185 @@
     "lineId": 102,
     "content": "The quiet street is shrouded inn mistt...",
     "timestamp": 1767099814
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 102,
+    "nextLineId": 104,
+    "content": "Ovo je tekst koji ima vise od dvadeset rijeci da vidimo hoce li ga server prelomiti u novu liniju kako",
+    "timestamp": 1767128190
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 104,
+    "nextLineId": 103,
+    "content": "treba test test test.",
+    "timestamp": 1767128190
+  },
+  {
+    "scenarioId": 1,
+    "type": "char_rename",
+    "oldName": "DUMBLEDORE",
+    "newName": "GANDALF",
+    "timestamp": 1767128727
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 101,
+    "nextLineId": 102,
+    "content": "Novi tekst iz konzole!",
+    "timestamp": 1767129383
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 102,
+    "nextLineId": 104,
+    "content": "Ovo je tekst koji ima vise od dvadeset rijeci da vidimoo hoce li ga server prelomiti u novu liniju kako",
+    "timestamp": 1767130402
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 101,
+    "nextLineId": 102,
+    "content": "Novi tekst iz konzolerr!",
+    "timestamp": 1767130426
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 103,
+    "nextLineId": null,
+    "content": "GANDALF:nista proba xoxo",
+    "timestamp": 1767130458
+  },
+  {
+    "scenarioId": 1,
+    "type": "char_rename",
+    "oldName": "dumbledore",
+    "newName": "rubina",
+    "timestamp": 1767133165
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 101,
+    "nextLineId": 102,
+    "content": "Novi tekst iz konzolerr!",
+    "timestamp": 1767133475
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 101,
+    "nextLineId": 102,
+    "content": "Novi tekst iz konzolerr!",
+    "timestamp": 1767133486
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 101,
+    "nextLineId": 102,
+    "content": "Novi tekst iz konzolerr!rr",
+    "timestamp": 1767133558
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 102,
+    "nextLineId": 104,
+    "content": "Ovo je tekst koji ima vise od dvadeset rijeci da vidimoo hoce li ga server prelomiti u novu liniju kako",
+    "timestamp": 1767133685
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 102,
+    "nextLineId": 104,
+    "content": "Ovo je tekst koji ima vise od dvadeset rijeci da vidimoo hoce li ga server prelomiti u novu liniju kakoruibnannanannnanannanan",
+    "timestamp": 1767133695
+  },
+  {
+    "scenarioId": 1,
+    "type": "char_rename",
+    "oldName": "gandalf",
+    "newName": "dumbledore",
+    "timestamp": 1767133710
+  },
+  {
+    "scenarioId": 1,
+    "type": "char_rename",
+    "oldName": "GANDALF",
+    "newName": "rubina",
+    "timestamp": 1767134247
+  },
+  {
+    "scenarioId": 1,
+    "type": "char_rename",
+    "oldName": "Novi",
+    "newName": "tekst",
+    "timestamp": 1767134931
+  },
+  {
+    "scenarioId": 1,
+    "type": "char_rename",
+    "oldName": "rubina",
+    "newName": "rubinaR",
+    "timestamp": 1767136155
+  },
+  {
+    "scenarioId": 1,
+    "type": "char_rename",
+    "oldName": "rubina",
+    "newName": "rubinaaa",
+    "timestamp": 1767136933
+  },
+  {
+    "scenarioId": 1,
+    "type": "char_rename",
+    "oldName": "rubinaR",
+    "newName": "rubinaR",
+    "timestamp": 1767136947
+  },
+  {
+    "scenarioId": 1,
+    "type": "char_rename",
+    "oldName": "rubinaR",
+    "newName": "rubinaRR",
+    "timestamp": 1767136960
+  },
+  {
+    "scenarioId": 1,
+    "type": "char_rename",
+    "oldName": "treba",
+    "newName": "ne treba",
+    "timestamp": 1767136993
+  },
+  {
+    "scenarioId": 1,
+    "type": "char_rename",
+    "oldName": "Treba",
+    "newName": "ne treba",
+    "timestamp": 1767137009
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 102,
+    "nextLineId": 104,
+    "content": "Ovo je tekst koji ima vise od dvadeset rijeci da vidimoo hoce li ga server prelomiti u novu liniju kakoruibnannanannnanannanannnn",
+    "timestamp": 1767137167
+  },
+  {
+    "scenarioId": 1,
+    "type": "char_rename",
+    "oldName": "tekst",
+    "newName": "rubina",
+    "timestamp": 1767137179
   }
 ]

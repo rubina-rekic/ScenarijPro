@@ -3,11 +3,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const porukeDiv = document.getElementById("poruke");
     let editor;
 
-
-    // --- NOVO: Varijable za praćenje stanja ---
-    const currentUserId = Math.floor(Math.random() * 10000) + 1;
-    const currentScenarioId = 1; // ID scenarija koji učitavamo
-    // Varijabla za praćenje trenutno zaključane linije na frontendu
+    const currentUserId =  1;
+    const currentScenarioId = 1; 
+ 
 let trenutnoZakljucanaLinijaId = null;
 
 divEditor.addEventListener('click', (e) => {
