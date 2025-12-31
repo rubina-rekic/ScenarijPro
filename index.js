@@ -215,7 +215,7 @@ app.post('/api/scenarios/:scenarioId/characters/update', async (req, res) => {
         return res.status(409).json({ message: "Greška: Niste zaključali ime lika ili nemate pravo izmjene!" });
     }
 
-    const regex = new RegExp(`\\b${oldName}\\b`, 'gi');
+    const regex = new RegExp(`\\b${oldName}\\b`, 'g');
 
     const linesToUpdate = scenario.content.filter(line => regex.test(line.text));
 
