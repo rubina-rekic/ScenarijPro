@@ -185,17 +185,31 @@ app.get('/api/scenarios/:scenarioId', async (req, res) => {
 });
 
 // Ruta: Zaključavanje lika
+// Ruta: Zaključavanje lika
 app.post('/api/scenarios/:scenarioId/characters/lock', async (req, res) => {
-    const { scenarioId } = req.params;
-    const { userId, characterName } = req.body;
+    // 1. OBAVEZNO PARSIRAJ U INTEGER
+    const scenarioId = parseInt(req.params.scenarioId); 
+    const userId = parseInt(req.body.userId);
+    const { characterName } = req.body;
 
     const scenario = await readScenario(scenarioId);
     if (!scenario) return res.status(404).json({ message: "Scenario ne postoji!" });
 
-    const existingLock = charLocks.find(c => c.scenarioId == scenarioId && c.characterName === characterName);
-    if (existingLock) return res.status(409).json({ message: "Konflikt! Ime lika je vec zakljucano!" });
+    // Pazi ovdje: c.scenarioId i scenarioId su sada oboje brojevi
+    const existingLock = charLocks.find(c => c.scenarioId === scenarioId && c.characterName === characterName);
+    
+    // Dodatna provjera: Ako je VEĆ zaključao isti korisnik, samo vrati OK (idempotentnost)
+    if (existingLock) {
+        if (existingLock.userId === userId) {
+             return res.status(200).json({ message: "Već ste zaključali ovo ime." });
+        }
+        return res.status(409).json({ message: "Konflikt! Ime lika je vec zakljucano!" });
+    }
 
     charLocks.push({ userId, scenarioId, characterName });
+    
+    console.log(`[CHAR-LOCK] User ${userId} zaključao "${characterName}" u scenariju ${scenarioId}`);
+    
     res.status(200).json({ message: "Ime lika je uspjesno zakljucano!" });
 });
 

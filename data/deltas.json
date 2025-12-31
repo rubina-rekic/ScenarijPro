@@ -319,5 +319,27 @@
     "oldName": "rubina",
     "newName": "dijamant",
     "timestamp": 1767138254
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 102,
+    "nextLineId": 104,
+    "content": "Ovo je dijamant koji ima vise od dvadeset rijeci daaa vidimoo hoce li ga server prelomiti u novu liniju kakoruibnannanannnanannanannnn",
+    "timestamp": 1767197058
+  },
+  {
+    "scenarioId": 1,
+    "type": "char_rename",
+    "oldName": "HAGRID",
+    "newName": "Dumbledore",
+    "timestamp": 1767197206
+  },
+  {
+    "scenarioId": 1,
+    "type": "char_rename",
+    "oldName": "dijamanT",
+    "newName": "dijamentttt",
+    "timestamp": 1767197219
   }
 ]
