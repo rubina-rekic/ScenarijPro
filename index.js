@@ -156,12 +156,9 @@ app.put('/api/scenarios/:scenarioId/lines/:lineId', async (req, res) => {
     deltas.push(...newDeltas);
     await fs.writeFile(DELTAS_FILE, JSON.stringify(deltas, null, 2));
 
-    // ... (tvoj postojeći kod ostaje isti do ovdje) ...
+  
     await writeScenario(scenarioId, scenario);
 
-    // --- POČETAK IZMJENE (SIGURNO BRISANJE) ---
-    // Moramo ponovo naći index jer se niz mogao promijeniti dok smo čekali (await)
-    // Također koristimo '==' zbog string/int razlika u parametrima
     const finalLockIndex = lineLocks.findIndex(l =>
         l.userId == userId &&
         l.scenarioId == scenarioId &&
@@ -204,22 +201,39 @@ app.post('/api/scenarios/:scenarioId/characters/lock', async (req, res) => {
 
 // Ruta: Update imena lika
 app.post('/api/scenarios/:scenarioId/characters/update', async (req, res) => {
-    const { scenarioId } = req.params;
-    const { userId, oldName, newName } = req.body;
+    
+    const scenarioId = parseInt(req.params.scenarioId);
+    const userId = parseInt(req.body.userId);
+    const { oldName, newName } = req.body;
 
     const scenario = await readScenario(scenarioId);
     if (!scenario) return res.status(404).json({ message: "Scenario ne postoji!" });
 
-    const lockIndex = charLocks.findIndex(c => c.userId == userId && c.scenarioId == scenarioId && c.characterName === oldName);
+    const charLockIndex = charLocks.findIndex(c => c.userId === userId && c.scenarioId === scenarioId && c.characterName === oldName);
     
-    if (lockIndex === -1) {
-        return res.status(409).json({ message: "Ime lika nije zakljucano ili nemate pravo izmjene!" });
+    if (charLockIndex === -1) {
+        return res.status(409).json({ message: "Greška: Niste zaključali ime lika ili nemate pravo izmjene!" });
     }
 
     const regex = new RegExp(`\\b${oldName}\\b`, 'gi');
 
-    let brojIzmjena = 0;
+    const linesToUpdate = scenario.content.filter(line => regex.test(line.text));
 
+    for (const line of linesToUpdate) {
+        const isLockedBySomeoneElse = lineLocks.find(lock => 
+            lock.scenarioId === scenarioId && 
+            lock.lineId === line.lineId && 
+            lock.userId !== userId 
+        );
+
+        if (isLockedBySomeoneElse) {
+            return res.status(409).json({ 
+                message: `Konflikt: Ne mogu promijeniti ime jer korisnik ${isLockedBySomeoneElse.userId} trenutno uređuje liniju ${line.lineId} u kojoj se to ime nalazi!` 
+            });
+        }
+    }
+
+    let brojIzmjena = 0;
     scenario.content.forEach(line => {
         if (regex.test(line.text)) {
             brojIzmjena++;
@@ -230,7 +244,7 @@ app.post('/api/scenarios/:scenarioId/characters/update', async (req, res) => {
     console.log(`[RENAME] Zamijenjeno ${brojIzmjena} pojavljivanja imena "${oldName}" u "${newName}".`);
 
     const delta = {
-        scenarioId: parseInt(scenarioId),
+        scenarioId: scenarioId,
         type: "char_rename",
         oldName, newName,
         timestamp: Math.floor(Date.now() / 1000)
@@ -242,9 +256,9 @@ app.post('/api/scenarios/:scenarioId/characters/update', async (req, res) => {
 
     await writeScenario(scenarioId, scenario);
     
-    charLocks.splice(lockIndex, 1); 
+    charLocks.splice(charLockIndex, 1); 
     
-    res.status(200).json({ message: `Ime lika je uspjesno promijenjeno (${brojIzmjena} izmjena)!` });
+    res.status(200).json({ message: `Ime lika uspješno promijenjeno (${brojIzmjena} izmjena)!` });
 });
 
 app.get('/api/scenarios/:scenarioId/deltas', async (req, res) => {

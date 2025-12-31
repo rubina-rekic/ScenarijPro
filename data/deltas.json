@@ -305,5 +305,19 @@
     "oldName": "tekst",
     "newName": "rubina",
     "timestamp": 1767137179
+  },
+  {
+    "scenarioId": 1,
+    "type": "char_rename",
+    "oldName": "rubinaRR",
+    "newName": "HAGRID",
+    "timestamp": 1767137896
+  },
+  {
+    "scenarioId": 1,
+    "type": "char_rename",
+    "oldName": "rubina",
+    "newName": "dijamant",
+    "timestamp": 1767138254
   }
 ]
