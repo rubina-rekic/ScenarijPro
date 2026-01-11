@@ -15,7 +15,7 @@ divEditor.addEventListener('click', (e) => {
     const lineId = p.getAttribute('data-line-id');
 
     // Pozivamo lockLine rute
-    PoziviAjax.lockLine(currentScenarioId, lineId, currentUserId, (status, podaci) => {
+    PoziviAjaxFetch.lockLine(currentScenarioId, lineId, currentUserId, (status, podaci) => {
         if (status === 200) {
             // Skinemo editabilnost sa svih, pa stavimo samo na ovaj
             divEditor.querySelectorAll('p').forEach(el => el.contentEditable = false);
@@ -32,7 +32,7 @@ divEditor.addEventListener('click', (e) => {
     // --- IZMJENA: Inicijalizacija editora ide unutar funkcije za učitavanje ---
     function inicijalizirajSistem() {
         // Prvo pozivamo server da nam da podatke
-        PoziviAjax.getScenario(currentScenarioId, (status, scenario) => {
+        PoziviAjaxFetch.getScenario(currentScenarioId, (status, scenario) => {
             if (status === 200) {
                 // 1. Stavimo tekst iz baze/fajla u div
                 // Pretpostavljamo da scenario ima niz 'content' (tako smo napravili u index.js)
@@ -69,7 +69,7 @@ const btnSpasi = document.getElementById('btnSpasi');
             const tekstZaSlanje = [pElement.innerText]; 
 
             // Pozivamo AJAX za spašavanje
-            PoziviAjax.updateLine(currentScenarioId, trenutnoZakljucanaLinijaId, currentUserId, tekstZaSlanje, (status, podaci) => {
+            PoziviAjaxFetch.updateLine(currentScenarioId, trenutnoZakljucanaLinijaId, currentUserId, tekstZaSlanje, (status, podaci) => {
                 if (status === 200) {
                     // 1. Odmah dajemo vizuelnu povratnu informaciju
                     porukeDiv.innerHTML = '<p style="color: green; font-weight: bold;">Promjene su trajno spremljene na server!</p>';
@@ -178,10 +178,10 @@ const btnSpasi = document.getElementById('btnSpasi');
             if (!noviLik) return;
 
             // 1. Korak: Zaključaj ime lika na serveru
-            PoziviAjax.lockCharacter(currentScenarioId, stariLik, currentUserId, (status, podaci) => {
+            PoziviAjaxFetch.lockCharacter(currentScenarioId, stariLik, currentUserId, (status, podaci) => {
                 if (status === 200) {
                     // 2. Korak: Ako je zaključavanje uspjelo, pošalji zahtjev za promjenu
-                    PoziviAjax.updateCharacter(currentScenarioId, currentUserId, stariLik, noviLik, (uStatus, uPodaci) => {
+                    PoziviAjaxFetch.updateCharacter(currentScenarioId, currentUserId, stariLik, noviLik, (uStatus, uPodaci) => {
                         if (uStatus === 200) {
                             porukeDiv.innerHTML = `<p style="color: green;">Lik "${stariLik}" je uspješno promijenjen u "${noviLik}" u cijelom scenariju!</p>`;
                             // Osvježi editor da se vide nova imena

@@ -90,8 +90,10 @@ app.post('/api/scenarios/:scenarioId/lines/:lineId/lock', async (req, res) => {
 
 // Ruta: Update linije (sa wrappingom)
 app.put('/api/scenarios/:scenarioId/lines/:lineId', async (req, res) => {
-    const { scenarioId, lineId } = req.params;
-    const { userId, newText } = req.body;
+    const scenarioId = parseInt(req.params.scenarioId);
+    const lineId = parseInt(req.params.lineId);
+    const userId = parseInt(req.body.userId);
+    const { newText } = req.body;
 
     if (!newText || !Array.isArray(newText) || newText.length === 0) {
         return res.status(400).json({ message: "Niz new_text ne smije biti prazan!" });
@@ -100,16 +102,24 @@ app.put('/api/scenarios/:scenarioId/lines/:lineId', async (req, res) => {
     const scenario = await readScenario(scenarioId);
     if (!scenario) return res.status(404).json({ message: "Scenario ne postoji!" });
 
-    // 1. Provjera locka
-    const lockIndex = lineLocks.findIndex(l => l.userId == userId && l.scenarioId == scenarioId && l.lineId == lineId);
-    if (lockIndex === -1) return res.status(409).json({ message: "Linija nije zakljucana!" });
+    
+    const existingLock = lineLocks.find(l => l.scenarioId === scenarioId && l.lineId === lineId);
 
-    let currentLineIndex = scenario.content.findIndex(l => l.lineId == lineId);
+    if (existingLock) {
+        // Lock postoji - provjeravamo vlasnika
+        if (existingLock.userId !== userId) {
+            return res.status(409).json({ message: "Linija je vec zakljucana od strane drugog korisnika!" });
+        }
+    } else {
+        // Lock ne postoji
+        return res.status(409).json({ message: "Linija nije zakljucana! Morate je prvo zakljucati." });
+    }
+
+    let currentLineIndex = scenario.content.findIndex(l => l.lineId === lineId);
     if (currentLineIndex === -1) return res.status(404).json({ message: "Linija ne postoji!" });
 
     const originalNextLineId = scenario.content[currentLineIndex].nextLineId;
 
-    // 2. Logika prelamanja (20 riječi) za svaki string u nizu
     let processedLinesTexts = [];
     newText.forEach(textSegment => {
         let words = textSegment.split(/\s+/).filter(w => w !== "");
@@ -122,7 +132,7 @@ app.put('/api/scenarios/:scenarioId/lines/:lineId', async (req, res) => {
         }
     });
 
-    // 3. Generisanje novih ID-ova i uvezivanje (Linked List)
+   
     let maxId = Math.max(...scenario.content.map(l => l.lineId), 0);
     let newContentParts = processedLinesTexts.map((text, idx) => {
         return {
@@ -132,14 +142,12 @@ app.put('/api/scenarios/:scenarioId/lines/:lineId', async (req, res) => {
         };
     });
 
-    // Uvezivanje lanca
     for (let i = 0; i < newContentParts.length - 1; i++) {
         newContentParts[i].nextLineId = newContentParts[i + 1].lineId;
     }
-    // Posljednja nova linija pokazuje na ono na šta je stara pokazivala
     newContentParts[newContentParts.length - 1].nextLineId = originalNextLineId;
 
-    // 4. Ažuriranje sadržaja i deltas.json
+  
     scenario.content.splice(currentLineIndex, 1, ...newContentParts);
 
     const timestamp = Math.floor(Date.now() / 1000);
@@ -156,25 +164,20 @@ app.put('/api/scenarios/:scenarioId/lines/:lineId', async (req, res) => {
     deltas.push(...newDeltas);
     await fs.writeFile(DELTAS_FILE, JSON.stringify(deltas, null, 2));
 
-  
     await writeScenario(scenarioId, scenario);
 
     const finalLockIndex = lineLocks.findIndex(l =>
-        l.userId == userId &&
-        l.scenarioId == scenarioId &&
-        l.lineId == lineId
+        l.userId === userId &&
+        l.scenarioId === scenarioId &&
+        l.lineId === lineId
     );
 
     if (finalLockIndex !== -1) {
         lineLocks.splice(finalLockIndex, 1);
         console.log(`🔓 Lock uspješno obrisan nakon update-a za Usera ${userId}`);
-    } else {
-        console.log(`⚠️ Upozorenje: Lock nije pronađen pri brisanju (možda već obrisan?)`);
     }
-   
 
     res.status(200).json({ message: "Linija je uspjesno azurirana!" });
-
 });
 
 // Ruta: Dobavljanje specifičnog scenarija

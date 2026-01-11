@@ -1,26 +1,96 @@
 {
   "id": 1,
-  "title": "HARRY POTTER",
+  "title": "Potraga za izgubljenim ključem",
   "content": [
     {
-      "lineId": 101,
-      "text": "dijamant dijamant iz konzolerr!rr",
-      "nextLineId": 102
+      "lineId": 1,
+      "nextLineId": 2,
+      "text": "NARATOR: Sunce je polako zalazilo nad starim gradom."
     },
     {
-      "lineId": 102,
-      "text": "Ovo je dijamant koji ima vise od dvadeset rijeci daaa vidimoo hoce li ga server prelomiti u novu liniju kakoruibnannanannnanannanannnn",
-      "nextLineId": 104
+      "lineId": 2,
+      "nextLineId": 3,
+      "text": "ALICIA: Jesi li siguran da je ključ ostao u biblioteci?"
     },
     {
-      "lineId": 104,
-      "text": "ne ne treba test test test.",
-      "nextLineId": 103
+      "lineId": 3,
+      "text": "riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ",
+      "nextLineId": 17
     },
     {
-      "lineId": 103,
-      "text": "Dumbledore:nista proba xoxo",
-      "nextLineId": null
+      "lineId": 17,
+      "text": "riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ",
+      "nextLineId": 18
+    },
+    {
+      "lineId": 18,
+      "text": "riječ riječ riječ riječ riječ",
+      "nextLineId": 15
+    },
+    {
+      "lineId": 15,
+      "text": "riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ",
+      "nextLineId": 16
+    },
+    {
+      "lineId": 16,
+      "text": "riječ riječ riječ riječ riječ",
+      "nextLineId": 13
+    },
+    {
+      "lineId": 13,
+      "text": "riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ",
+      "nextLineId": 14
+    },
+    {
+      "lineId": 14,
+      "text": "riječ riječ riječ riječ riječ",
+      "nextLineId": 11
+    },
+    {
+      "lineId": 11,
+      "text": "riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ",
+      "nextLineId": 12
+    },
+    {
+      "lineId": 12,
+      "text": "riječ riječ riječ riječ riječ",
+      "nextLineId": 9
+    },
+    {
+      "lineId": 9,
+      "text": "riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ",
+      "nextLineId": 10
+    },
+    {
+      "lineId": 10,
+      "text": "riječ riječ riječ riječ riječ",
+      "nextLineId": 7
+    },
+    {
+      "lineId": 7,
+      "text": "riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ",
+      "nextLineId": 8
+    },
+    {
+      "lineId": 8,
+      "text": "riječ riječ riječ riječ riječ",
+      "nextLineId": 4
+    },
+    {
+      "lineId": 4,
+      "nextLineId": 5,
+      "text": "ALICIA: Moramo požuriti prije nego što čuvar zaključa glavna vrata."
+    },
+    {
+      "lineId": 5,
+      "nextLineId": 6,
+      "text": "BOB: Čekaj, čuješ li taj zvuk iza polica?"
+    },
+    {
+      "lineId": 6,
+      "nextLineId": null,
+      "text": "NARATOR: Iz sjene se polako pojavila nepoznata figura."
     }
   ]
 }

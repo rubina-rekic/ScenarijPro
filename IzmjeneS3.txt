@@ -1,0 +1,20 @@
+PoziviAjaxFetch.js
+
+I1 - Promjena naziva iz PoziviAjax u PoziviAjaxFetch radi usklađivanja sa testom.
+
+
+editor.js
+
+I1 - Ispravka naziva PoziviAjax -> PoziviAjaxFetch
+
+
+writing.html
+
+I1 - Ispravka naziva PoziviAjax -> PoziviAjaxFetch
+
+
+index.js
+
+I8 - Promjena tipa podatka u parametrima (scenarioId i lineId) iz stringa u broj korištenjem parseInt radi ispravnog poređenja u PUT ruti.
+
+I6 - Promjena logike provjere i sadržaja poruke odgovora u PUT ruti (vraćanje poruke "vec zakljucana" sa statusom 409) kako bi odgovor odgovarao specifikaciji testova.

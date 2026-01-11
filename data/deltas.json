@@ -1,375 +1,279 @@
 [
   {
     "scenarioId": 1,
-    "type": "char_rename",
-    "oldName": "hagrid",
-    "newName": "rubina",
-    "timestamp": 1766326465
-  },
-  {
-    "scenarioId": 1,
-    "type": "char_rename",
-    "oldName": "rubina",
-    "newName": "hagrid",
-    "timestamp": 1766326474
-  },
-  {
-    "scenarioId": 1,
     "type": "line_update",
     "lineId": 1,
+    "nextLineId": 2,
+    "content": "NARATOR: Sunce je polako zalazilo nad starim gradom.",
+    "timestamp": 1736520000
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 2,
+    "nextLineId": 3,
+    "content": "ALICE: Jesi li siguran da je ključ ostao u biblioteci?",
+    "timestamp": 1736520010
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 3,
+    "nextLineId": 4,
+    "content": "BOB: To je posljednje mjesto gdje sam ga vidio prije nego što je pala noć.",
+    "timestamp": 1736520020
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 4,
+    "nextLineId": 5,
+    "content": "ALICE: Moramo požuriti prije nego što čuvar zaključa glavna vrata.",
+    "timestamp": 1736520030
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 5,
+    "nextLineId": 6,
+    "content": "BOB: Čekaj, čuješ li taj zvuk iza polica?",
+    "timestamp": 1736520040
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 6,
     "nextLineId": null,
-    "content": "Ovo je početni tekst iz datoteke.hshshhshshjiqjiwwuhuwdhdwudhuhduhhbjbcncdncncdjdcjjndjccnjcn",
-    "timestamp": 1766326551
-  },
-  {
-    "scenarioId": 1,
-    "type": "line_update",
-    "lineId": 103,
-    "content": "DUMBLEDORE: It's a strange old business.xx",
-    "timestamp": 1766326879
-  },
-  {
-    "scenarioId": 1,
-    "type": "line_update",
-    "lineId": 102,
-    "content": "The quiet street is shrssssssouded in mist.",
-    "timestamp": 1766327017
-  },
-  {
-    "scenarioId": 1,
-    "type": "line_update",
-    "lineId": 102,
-    "content": "The quiet street is shrouded hshsshhin mist.",
-    "timestamp": 1766327121
-  },
-  {
-    "scenarioId": 1,
-    "type": "line_update",
-    "lineId": 102,
-    "content": "The quiet street is shrouded in mist.hhdh",
-    "timestamp": 1766327203
-  },
-  {
-    "scenarioId": 1,
-    "type": "line_update",
-    "lineId": 103,
-    "content": "DUMBLEDORE: It's a strange old businxoxoess.",
-    "timestamp": 1766327666
-  },
-  {
-    "scenarioId": 1,
-    "type": "line_update",
-    "lineId": 101,
-    "content": "EXT. PRIVET DRIVE - NIGHTruibna",
-    "timestamp": 1766327677
-  },
-  {
-    "scenarioId": 1,
-    "type": "line_update",
-    "lineId": 101,
-    "content": "EXT. PRIVET DRIVE - NIGHTdruibna",
-    "timestamp": 1767096185
+    "content": "NARATOR: Iz sjene se polako pojavila nepoznata figura.",
+    "timestamp": 1736520050
   },
   {
     "scenarioId": 1,
     "type": "char_rename",
-    "oldName": "dumbledore",
-    "newName": "rubina",
-    "timestamp": 1767096201
+    "oldName": "BOB",
+    "newName": "ROBERT",
+    "timestamp": 1736520100
   },
   {
     "scenarioId": 1,
     "type": "line_update",
-    "lineId": 102,
-    "content": "The quiet street is shrouded in mistt.",
-    "timestamp": 1767096282
+    "lineId": 3,
+    "nextLineId": 7,
+    "content": "riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ",
+    "timestamp": 1768138468
   },
   {
     "scenarioId": 1,
     "type": "line_update",
-    "lineId": 102,
-    "content": "The quiet street is shrouded inn mistt.",
-    "timestamp": 1767096401
+    "lineId": 7,
+    "nextLineId": 8,
+    "content": "riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ",
+    "timestamp": 1768138468
   },
   {
     "scenarioId": 1,
     "type": "line_update",
-    "lineId": 103,
-    "content": "DUMBLEDORE:",
-    "timestamp": 1767096585
-  },
-  {
-    "scenarioId": 1,
-    "type": "line_update",
-    "lineId": 101,
-    "content": "EXT. PRIVET DRIVE - NIGHTdruibnaa",
-    "timestamp": 1767098486
-  },
-  {
-    "scenarioId": 1,
-    "type": "line_update",
-    "lineId": 103,
-    "content": "DUMBLEDORE:nista proba",
-    "timestamp": 1767098642
-  },
-  {
-    "scenarioId": 1,
-    "type": "line_update",
-    "lineId": 102,
-    "content": "The quiet street is shrouded inn mistt..",
-    "timestamp": 1767098695
-  },
-  {
-    "scenarioId": 1,
-    "type": "line_update",
-    "lineId": 102,
-    "content": "The quiet street is shrouded inn mistt...",
-    "timestamp": 1767099814
-  },
-  {
-    "scenarioId": 1,
-    "type": "line_update",
-    "lineId": 102,
-    "nextLineId": 104,
-    "content": "Ovo je tekst koji ima vise od dvadeset rijeci da vidimo hoce li ga server prelomiti u novu liniju kako",
-    "timestamp": 1767128190
-  },
-  {
-    "scenarioId": 1,
-    "type": "line_update",
-    "lineId": 104,
-    "nextLineId": 103,
-    "content": "treba test test test.",
-    "timestamp": 1767128190
+    "lineId": 8,
+    "nextLineId": 4,
+    "content": "riječ riječ riječ riječ riječ",
+    "timestamp": 1768138468
   },
   {
     "scenarioId": 1,
     "type": "char_rename",
-    "oldName": "DUMBLEDORE",
-    "newName": "GANDALF",
-    "timestamp": 1767128727
+    "oldName": "ALICE",
+    "newName": "ALICIA",
+    "timestamp": 1768138468
+  },
+  {
+    "scenarioId": 1,
+    "type": "char_rename",
+    "oldName": "ALICE",
+    "newName": "ALICIA",
+    "timestamp": 1768139742
   },
   {
     "scenarioId": 1,
     "type": "line_update",
-    "lineId": 101,
-    "nextLineId": 102,
-    "content": "Novi tekst iz konzole!",
-    "timestamp": 1767129383
+    "lineId": 3,
+    "nextLineId": 9,
+    "content": "riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ",
+    "timestamp": 1768139994
   },
   {
     "scenarioId": 1,
     "type": "line_update",
-    "lineId": 102,
-    "nextLineId": 104,
-    "content": "Ovo je tekst koji ima vise od dvadeset rijeci da vidimoo hoce li ga server prelomiti u novu liniju kako",
-    "timestamp": 1767130402
+    "lineId": 9,
+    "nextLineId": 10,
+    "content": "riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ",
+    "timestamp": 1768139994
   },
   {
     "scenarioId": 1,
     "type": "line_update",
-    "lineId": 101,
-    "nextLineId": 102,
-    "content": "Novi tekst iz konzolerr!",
-    "timestamp": 1767130426
+    "lineId": 10,
+    "nextLineId": 7,
+    "content": "riječ riječ riječ riječ riječ",
+    "timestamp": 1768139994
+  },
+  {
+    "scenarioId": 1,
+    "type": "char_rename",
+    "oldName": "ALICE",
+    "newName": "ALICIA",
+    "timestamp": 1768139995
+  },
+  {
+    "scenarioId": 1,
+    "type": "char_rename",
+    "oldName": "ALICE",
+    "newName": "ALICIA",
+    "timestamp": 1768140160
+  },
+  {
+    "scenarioId": 1,
+    "type": "char_rename",
+    "oldName": "ALICE",
+    "newName": "ALICIA",
+    "timestamp": 1768140205
+  },
+  {
+    "scenarioId": 1,
+    "type": "char_rename",
+    "oldName": "ALICE",
+    "newName": "ALICIA",
+    "timestamp": 1768140316
   },
   {
     "scenarioId": 1,
     "type": "line_update",
-    "lineId": 103,
-    "nextLineId": null,
-    "content": "GANDALF:nista proba xoxo",
-    "timestamp": 1767130458
-  },
-  {
-    "scenarioId": 1,
-    "type": "char_rename",
-    "oldName": "dumbledore",
-    "newName": "rubina",
-    "timestamp": 1767133165
+    "lineId": 3,
+    "nextLineId": 11,
+    "content": "riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ",
+    "timestamp": 1768140513
   },
   {
     "scenarioId": 1,
     "type": "line_update",
-    "lineId": 101,
-    "nextLineId": 102,
-    "content": "Novi tekst iz konzolerr!",
-    "timestamp": 1767133475
+    "lineId": 11,
+    "nextLineId": 12,
+    "content": "riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ",
+    "timestamp": 1768140513
   },
   {
     "scenarioId": 1,
     "type": "line_update",
-    "lineId": 101,
-    "nextLineId": 102,
-    "content": "Novi tekst iz konzolerr!",
-    "timestamp": 1767133486
+    "lineId": 12,
+    "nextLineId": 9,
+    "content": "riječ riječ riječ riječ riječ",
+    "timestamp": 1768140513
+  },
+  {
+    "scenarioId": 1,
+    "type": "char_rename",
+    "oldName": "ALICE",
+    "newName": "ALICIA",
+    "timestamp": 1768140513
   },
   {
     "scenarioId": 1,
     "type": "line_update",
-    "lineId": 101,
-    "nextLineId": 102,
-    "content": "Novi tekst iz konzolerr!rr",
-    "timestamp": 1767133558
+    "lineId": 3,
+    "nextLineId": 13,
+    "content": "riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ",
+    "timestamp": 1768140670
   },
   {
     "scenarioId": 1,
     "type": "line_update",
-    "lineId": 102,
-    "nextLineId": 104,
-    "content": "Ovo je tekst koji ima vise od dvadeset rijeci da vidimoo hoce li ga server prelomiti u novu liniju kako",
-    "timestamp": 1767133685
+    "lineId": 13,
+    "nextLineId": 14,
+    "content": "riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ",
+    "timestamp": 1768140670
   },
   {
     "scenarioId": 1,
     "type": "line_update",
-    "lineId": 102,
-    "nextLineId": 104,
-    "content": "Ovo je tekst koji ima vise od dvadeset rijeci da vidimoo hoce li ga server prelomiti u novu liniju kakoruibnannanannnanannanan",
-    "timestamp": 1767133695
+    "lineId": 14,
+    "nextLineId": 11,
+    "content": "riječ riječ riječ riječ riječ",
+    "timestamp": 1768140670
   },
   {
     "scenarioId": 1,
     "type": "char_rename",
-    "oldName": "gandalf",
-    "newName": "dumbledore",
-    "timestamp": 1767133710
-  },
-  {
-    "scenarioId": 1,
-    "type": "char_rename",
-    "oldName": "GANDALF",
-    "newName": "rubina",
-    "timestamp": 1767134247
-  },
-  {
-    "scenarioId": 1,
-    "type": "char_rename",
-    "oldName": "Novi",
-    "newName": "tekst",
-    "timestamp": 1767134931
-  },
-  {
-    "scenarioId": 1,
-    "type": "char_rename",
-    "oldName": "rubina",
-    "newName": "rubinaR",
-    "timestamp": 1767136155
-  },
-  {
-    "scenarioId": 1,
-    "type": "char_rename",
-    "oldName": "rubina",
-    "newName": "rubinaaa",
-    "timestamp": 1767136933
-  },
-  {
-    "scenarioId": 1,
-    "type": "char_rename",
-    "oldName": "rubinaR",
-    "newName": "rubinaR",
-    "timestamp": 1767136947
-  },
-  {
-    "scenarioId": 1,
-    "type": "char_rename",
-    "oldName": "rubinaR",
-    "newName": "rubinaRR",
-    "timestamp": 1767136960
-  },
-  {
-    "scenarioId": 1,
-    "type": "char_rename",
-    "oldName": "treba",
-    "newName": "ne treba",
-    "timestamp": 1767136993
-  },
-  {
-    "scenarioId": 1,
-    "type": "char_rename",
-    "oldName": "Treba",
-    "newName": "ne treba",
-    "timestamp": 1767137009
+    "oldName": "ALICE",
+    "newName": "ALICIA",
+    "timestamp": 1768140670
   },
   {
     "scenarioId": 1,
     "type": "line_update",
-    "lineId": 102,
-    "nextLineId": 104,
-    "content": "Ovo je tekst koji ima vise od dvadeset rijeci da vidimoo hoce li ga server prelomiti u novu liniju kakoruibnannanannnanannanannnn",
-    "timestamp": 1767137167
-  },
-  {
-    "scenarioId": 1,
-    "type": "char_rename",
-    "oldName": "tekst",
-    "newName": "rubina",
-    "timestamp": 1767137179
-  },
-  {
-    "scenarioId": 1,
-    "type": "char_rename",
-    "oldName": "rubinaRR",
-    "newName": "HAGRID",
-    "timestamp": 1767137896
-  },
-  {
-    "scenarioId": 1,
-    "type": "char_rename",
-    "oldName": "rubina",
-    "newName": "dijamant",
-    "timestamp": 1767138254
+    "lineId": 11,
+    "nextLineId": 12,
+    "content": "riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ",
+    "timestamp": 1768141427
   },
   {
     "scenarioId": 1,
     "type": "line_update",
-    "lineId": 102,
-    "nextLineId": 104,
-    "content": "Ovo je dijamant koji ima vise od dvadeset rijeci daaa vidimoo hoce li ga server prelomiti u novu liniju kakoruibnannanannnanannanannnn",
-    "timestamp": 1767197058
-  },
-  {
-    "scenarioId": 1,
-    "type": "char_rename",
-    "oldName": "HAGRID",
-    "newName": "Dumbledore",
-    "timestamp": 1767197206
-  },
-  {
-    "scenarioId": 1,
-    "type": "char_rename",
-    "oldName": "dijamanT",
-    "newName": "dijamentttt",
-    "timestamp": 1767197219
-  },
-  {
-    "scenarioId": 1,
-    "type": "char_rename",
-    "oldName": "rubina",
-    "newName": "dijamant",
-    "timestamp": 1767197412
+    "lineId": 3,
+    "nextLineId": 15,
+    "content": "riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ",
+    "timestamp": 1768141444
   },
   {
     "scenarioId": 1,
     "type": "line_update",
-    "lineId": 104,
-    "nextLineId": 103,
-    "content": "ne ne treba test test test.",
-    "timestamp": 1767198002
+    "lineId": 15,
+    "nextLineId": 16,
+    "content": "riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ",
+    "timestamp": 1768141444
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 16,
+    "nextLineId": 13,
+    "content": "riječ riječ riječ riječ riječ",
+    "timestamp": 1768141444
   },
   {
     "scenarioId": 1,
     "type": "char_rename",
-    "oldName": "Hagrid",
-    "newName": "HAGRID",
-    "timestamp": 1767198263
+    "oldName": "ALICE",
+    "newName": "ALICIA",
+    "timestamp": 1768141444
   },
   {
-    "scenarioId": 3,
+    "scenarioId": 1,
     "type": "line_update",
-    "lineId": 1,
-    "nextLineId": null,
-    "content": "Harry Potter je stigao u Hogwarts.",
-    "timestamp": 1767198613
+    "lineId": 3,
+    "nextLineId": 17,
+    "content": "riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ",
+    "timestamp": 1768142303
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 17,
+    "nextLineId": 18,
+    "content": "riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ",
+    "timestamp": 1768142303
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 18,
+    "nextLineId": 15,
+    "content": "riječ riječ riječ riječ riječ",
+    "timestamp": 1768142303
+  },
+  {
+    "scenarioId": 1,
+    "type": "char_rename",
+    "oldName": "ALICE",
+    "newName": "ALICIA",
+    "timestamp": 1768142303
   }
 ]

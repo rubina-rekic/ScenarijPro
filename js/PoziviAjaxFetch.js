@@ -1,4 +1,4 @@
-const PoziviAjax = (function() {
+const PoziviAjaxFetch = (function() {
     const API_BASE = "/api";
 
     function handleResponse(promise, callback) {
