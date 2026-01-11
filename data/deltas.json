@@ -275,5 +275,36 @@
     "oldName": "ALICE",
     "newName": "ALICIA",
     "timestamp": 1768142303
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 3,
+    "nextLineId": 19,
+    "content": "riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ",
+    "timestamp": 1768144593
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 19,
+    "nextLineId": 20,
+    "content": "riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ",
+    "timestamp": 1768144593
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 20,
+    "nextLineId": 17,
+    "content": "riječ riječ riječ riječ riječ",
+    "timestamp": 1768144593
+  },
+  {
+    "scenarioId": 1,
+    "type": "char_rename",
+    "oldName": "ALICE",
+    "newName": "ALICIA",
+    "timestamp": 1768144593
   }
 ]

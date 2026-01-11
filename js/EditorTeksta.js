@@ -60,10 +60,10 @@ let EditorTeksta = function (divRef) {
 
             if (EMPTY_LINE_REGEX.test(line)) continue;
 
-            // SCENA
+          
             if (SCENE_HEADING_REGEX.test(line)) {
                 finishDialogueSegment();
-                // Ako je prva scena prazna, pregazi je, inače nova
+                
                 if (structure.length === 1 && !structure[0].title && structure[0].dialogueSegments.length === 0) {
                     structure[0].title = line;
                     currentScene = structure[0];
@@ -130,12 +130,12 @@ let EditorTeksta = function (divRef) {
                             if (!currentScene.roles.has(roleName)) currentScene.roles.set(roleName, []);
                             currentScene.roles.get(roleName).push(block);
 
-                            i = j - 1; // Preskačemo obrađene linije
+                            i = j - 1; 
                             continue;
                         }
                     }
                 }
-                // Ako smo ovdje, znači da je izgledalo kao uloga, ali nema govora -> Akcija
+                
                 finishDialogueSegment();
             }
 
