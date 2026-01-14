@@ -306,5 +306,67 @@
     "oldName": "ALICE",
     "newName": "ALICIA",
     "timestamp": 1768144593
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 3,
+    "nextLineId": 21,
+    "content": "riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ",
+    "timestamp": 1768351477
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 21,
+    "nextLineId": 22,
+    "content": "riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ",
+    "timestamp": 1768351477
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 22,
+    "nextLineId": 19,
+    "content": "riječ riječ riječ riječ riječ",
+    "timestamp": 1768351477
+  },
+  {
+    "scenarioId": 1,
+    "type": "char_rename",
+    "oldName": "ALICE",
+    "newName": "ALICIA",
+    "timestamp": 1768351477
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 3,
+    "nextLineId": 23,
+    "content": "riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ",
+    "timestamp": 1768351593
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 23,
+    "nextLineId": 24,
+    "content": "riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ",
+    "timestamp": 1768351593
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 24,
+    "nextLineId": 21,
+    "content": "riječ riječ riječ riječ riječ",
+    "timestamp": 1768351593
+  },
+  {
+    "scenarioId": 1,
+    "type": "char_rename",
+    "oldName": "ALICE",
+    "newName": "ALICIA",
+    "timestamp": 1768351593
   }
 ]

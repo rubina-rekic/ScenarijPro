@@ -108,11 +108,11 @@ app.put('/api/scenarios/:scenarioId/lines/:lineId', async (req, res) => {
     if (existingLock) {
         // Lock postoji - provjeravamo vlasnika
         if (existingLock.userId !== userId) {
-            return res.status(409).json({ message: "Linija je vec zakljucana od strane drugog korisnika!" });
+            return res.status(409).json({ message: "Linija je vec zakljucana!" });
         }
     } else {
         // Lock ne postoji
-        return res.status(409).json({ message: "Linija nije zakljucana! Morate je prvo zakljucati." });
+        return res.status(409).json({ message: "Linija nije zakljucana!" });
     }
 
     let currentLineIndex = scenario.content.findIndex(l => l.lineId === lineId);
@@ -275,7 +275,7 @@ app.post('/api/scenarios/:scenarioId/characters/update', async (req, res) => {
     
     charLocks.splice(charLockIndex, 1); 
     
-    res.status(200).json({ message: `Ime lika uspješno promijenjeno (${brojIzmjena} izmjena)!` });
+    res.status(200).json({ message: "Ime lika je uspjesno promijenjeno!" });
 });
 
 app.get('/api/scenarios/:scenarioId/deltas', async (req, res) => {

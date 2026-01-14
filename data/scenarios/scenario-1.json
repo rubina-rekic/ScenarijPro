@@ -15,6 +15,26 @@
     {
       "lineId": 3,
       "text": "riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ",
+      "nextLineId": 23
+    },
+    {
+      "lineId": 23,
+      "text": "riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ",
+      "nextLineId": 24
+    },
+    {
+      "lineId": 24,
+      "text": "riječ riječ riječ riječ riječ",
+      "nextLineId": 21
+    },
+    {
+      "lineId": 21,
+      "text": "riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ riječ",
+      "nextLineId": 22
+    },
+    {
+      "lineId": 22,
+      "text": "riječ riječ riječ riječ riječ",
       "nextLineId": 19
     },
     {
