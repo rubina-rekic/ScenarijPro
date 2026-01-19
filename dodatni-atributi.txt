@@ -1,0 +1,1 @@
+Tabele sadrže atribute createdAt i updatedAt koje Sequelize ORM automatski generiše za praćenje vremena kreiranja i ažuriranja zapisa.

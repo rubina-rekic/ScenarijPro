@@ -19,7 +19,9 @@
   },
   "homepage": "https://bitbucket.org/rubina_workspace/wt26p19797#readme",
   "dependencies": {
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "mysql2": "^3.16.1",
+    "sequelize": "^6.37.7"
   },
   "devDependencies": {
     "chai": "^6.2.2",
