@@ -8,6 +8,9 @@ const sequelize = new Sequelize('wt26', 'root', '', {
 
 const Scenario = sequelize.define('Scenario', {
     title: { type: DataTypes.STRING, allowNull: false }
+}, {
+    freezeTableName: true, 
+    tableName: 'Scenario'
 });
 
 const Line = sequelize.define('Line', {
@@ -15,6 +18,9 @@ const Line = sequelize.define('Line', {
     text: { type: DataTypes.TEXT },
     nextLineId: { type: DataTypes.INTEGER, allowNull: true },
     scenarioId: { type: DataTypes.INTEGER, allowNull: false } 
+}, {
+    freezeTableName: true,
+    tableName: 'Line'
 });
 
 const Delta = sequelize.define('Delta', {
@@ -26,11 +32,17 @@ const Delta = sequelize.define('Delta', {
     newName: { type: DataTypes.STRING, allowNull: true },
     timestamp: { type: DataTypes.INTEGER, allowNull: false },
     scenarioId: { type: DataTypes.INTEGER, allowNull: false } 
+}, {
+    freezeTableName: true,
+    tableName: 'Delta'
 });
 
 const Checkpoint = sequelize.define('Checkpoint', {
     timestamp: { type: DataTypes.INTEGER, allowNull: false },
     scenarioId: { type: DataTypes.INTEGER, allowNull: false } 
+}, {
+    freezeTableName: true,
+    tableName: 'Checkpoint'
 });
 
 
