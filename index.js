@@ -382,34 +382,47 @@ const initialScenario = {
   ]
 };
 
+
 sequelize.sync({ force: true }).then(async () => {
    
     lineLocks = [];
     charLocks = [];
 
     try {
-        
         const scenario = await Scenario.create({
             id: initialScenario.id, 
             title: initialScenario.title
         });
 
-        
+       
+        const timestamp = Math.floor(Date.now() / 1000); 
         for (const lineData of initialScenario.lines) {
+            
             await Line.create({
                 lineId: lineData.lineId,
                 text: lineData.text,
                 nextLineId: lineData.nextLineId,
                 scenarioId: scenario.id
             });
+
+            
+            if (lineData.text !== "" || lineData.lineId !== 1) {
+                await Delta.create({
+                    scenarioId: scenario.id,
+                    type: "line_update",
+                    lineId: lineData.lineId,
+                    nextLineId: lineData.nextLineId,
+                    content: lineData.text,
+                    timestamp: timestamp
+                });
+            }
         }
 
-        console.log("Baza je 'seed-ana' sa testnim podacima.");
+        console.log("Baza je 'seed-ana' sa podacima I deltama.");
     } catch (error) {
         console.error("Greška pri ubacivanju podataka:", error);
     }
 
-    
     app.listen(PORT, () => {
         console.log(`Server running on http://localhost:${PORT}`);
     });

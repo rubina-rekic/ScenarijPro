@@ -7,6 +7,11 @@ const sequelize = new Sequelize('wt26', 'root', 'password', {
 });
 
 const Scenario = sequelize.define('Scenario', {
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
     title: { type: DataTypes.STRING, allowNull: false }
 }, {
     freezeTableName: true, 
@@ -15,7 +20,12 @@ const Scenario = sequelize.define('Scenario', {
 });
 
 const Line = sequelize.define('Line', {
-    lineId: { type: DataTypes.INTEGER, allowNull: false },
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    lineId: { type: DataTypes.INTEGER, allowNull: false }, 
     text: { type: DataTypes.TEXT }, 
     nextLineId: { type: DataTypes.INTEGER, allowNull: true },
     scenarioId: { type: DataTypes.INTEGER, allowNull: false } 
@@ -26,13 +36,18 @@ const Line = sequelize.define('Line', {
 });
 
 const Delta = sequelize.define('Delta', {
-    type: { type: DataTypes.STRING, allowNull: false },
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    type: { type: DataTypes.STRING, allowNull: false }, 
     lineId: { type: DataTypes.INTEGER, allowNull: true },
     nextLineId: { type: DataTypes.INTEGER, allowNull: true },
     content: { type: DataTypes.TEXT, allowNull: true },
     oldName: { type: DataTypes.STRING, allowNull: true },
     newName: { type: DataTypes.STRING, allowNull: true },
-    timestamp: { type: DataTypes.INTEGER, allowNull: false }, // manuelni timestamp
+    timestamp: { type: DataTypes.INTEGER, allowNull: false }, 
     scenarioId: { type: DataTypes.INTEGER, allowNull: false } 
 }, {
     freezeTableName: true,
@@ -41,6 +56,11 @@ const Delta = sequelize.define('Delta', {
 });
 
 const Checkpoint = sequelize.define('Checkpoint', {
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
     timestamp: { type: DataTypes.INTEGER, allowNull: false },
     scenarioId: { type: DataTypes.INTEGER, allowNull: false } 
 }, {
