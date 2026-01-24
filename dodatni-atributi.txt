@@ -1,1 +1,2 @@
-Tabele sadrže atribute createdAt i updatedAt koje Sequelize ORM automatski generise za pracenje vremena kreiranja i ažuriranja zapisa.
+U implementaciji nisu koristeni dodatni atributi izvan onih trazenih postavkom. 
+Automatsko generisanje createdAt i updatedAt kolona je eksplicitno isključeno (timestamps: false) kako bi se osigurala potpuna usklađenost sa zahtjevanim modelom baze podataka.

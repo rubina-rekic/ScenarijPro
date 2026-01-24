@@ -3,24 +3,26 @@ const { Sequelize, DataTypes } = require('sequelize');
 const sequelize = new Sequelize('wt26', 'root', '', {
     host: 'localhost',
     dialect: 'mysql',
-    logging: false
+    logging: false 
 });
 
 const Scenario = sequelize.define('Scenario', {
     title: { type: DataTypes.STRING, allowNull: false }
 }, {
     freezeTableName: true, 
-    tableName: 'Scenario'
+    tableName: 'Scenario',
+    timestamps: false 
 });
 
 const Line = sequelize.define('Line', {
     lineId: { type: DataTypes.INTEGER, allowNull: false },
-    text: { type: DataTypes.TEXT },
+    text: { type: DataTypes.TEXT }, 
     nextLineId: { type: DataTypes.INTEGER, allowNull: true },
     scenarioId: { type: DataTypes.INTEGER, allowNull: false } 
 }, {
     freezeTableName: true,
-    tableName: 'Line'
+    tableName: 'Line',
+    timestamps: false 
 });
 
 const Delta = sequelize.define('Delta', {
@@ -30,11 +32,12 @@ const Delta = sequelize.define('Delta', {
     content: { type: DataTypes.TEXT, allowNull: true },
     oldName: { type: DataTypes.STRING, allowNull: true },
     newName: { type: DataTypes.STRING, allowNull: true },
-    timestamp: { type: DataTypes.INTEGER, allowNull: false },
+    timestamp: { type: DataTypes.INTEGER, allowNull: false }, // manuelni timestamp
     scenarioId: { type: DataTypes.INTEGER, allowNull: false } 
 }, {
     freezeTableName: true,
-    tableName: 'Delta'
+    tableName: 'Delta',
+    timestamps: false 
 });
 
 const Checkpoint = sequelize.define('Checkpoint', {
@@ -42,12 +45,17 @@ const Checkpoint = sequelize.define('Checkpoint', {
     scenarioId: { type: DataTypes.INTEGER, allowNull: false } 
 }, {
     freezeTableName: true,
-    tableName: 'Checkpoint'
+    tableName: 'Checkpoint',
+    timestamps: false 
 });
 
-
+// Relacije 
 Scenario.hasMany(Line, { foreignKey: 'scenarioId', onDelete: 'CASCADE' });
 Scenario.hasMany(Delta, { foreignKey: 'scenarioId', onDelete: 'CASCADE' });
 Scenario.hasMany(Checkpoint, { foreignKey: 'scenarioId', onDelete: 'CASCADE' });
+
+Line.belongsTo(Scenario, { foreignKey: 'scenarioId' });
+Delta.belongsTo(Scenario, { foreignKey: 'scenarioId' });
+Checkpoint.belongsTo(Scenario, { foreignKey: 'scenarioId' });
 
 module.exports = { sequelize, Scenario, Line, Delta, Checkpoint };
