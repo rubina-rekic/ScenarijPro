@@ -342,7 +342,7 @@ app.get('/api/scenarios/:scenarioId/restore/:checkpointId', async (req, res) => 
         res.status(200).json({ 
             id: scenario.id, 
             title: scenario.title, 
-            lines: state 
+            content: state
         });
 
     } catch (error) {
