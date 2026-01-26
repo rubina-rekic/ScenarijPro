@@ -351,6 +351,64 @@ app.get('/api/scenarios/:scenarioId/restore/:checkpointId', async (req, res) => 
     }
 });
 
+const initialDeltas = [
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 1,
+    "nextLineId": 2,
+    "content": "NARATOR: Sunce je polako zalazilo nad starim gradom.",
+    "timestamp": 1736520000
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 2,
+    "nextLineId": 3,
+    "content": "ALICE: Jesi li siguran da je ključ ostao u biblioteci?",
+    "timestamp": 1736520010
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 3,
+    "nextLineId": 4,
+    "content": "BOB: To je posljednje mjesto gdje sam ga vidio prije nego što je pala noć.",
+    "timestamp": 1736520020
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 4,
+    "nextLineId": 5,
+    "content": "ALICE: Moramo požuriti prije nego što čuvar zaključa glavna vrata.",
+    "timestamp": 1736520030
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 5,
+    "nextLineId": 6,
+    "content": "BOB: Čekaj, čuješ li taj zvuk iza polica?",
+    "timestamp": 1736520040
+  },
+  {
+    "scenarioId": 1,
+    "type": "line_update",
+    "lineId": 6,
+    "nextLineId": null,
+    "content": "NARATOR: Iz sjene se polako pojavila nepoznata figura.",
+    "timestamp": 1736520050
+  },
+  {
+    "scenarioId": 1,
+    "type": "char_rename",
+    "oldName": "BOB",
+    "newName": "ROBERT",
+    "timestamp": 1736520100
+  }
+];
+
 const initialScenario = {
   id: 1,
   title: "Potraga za izgubljenim ključem",
@@ -393,6 +451,18 @@ sequelize.sync({ force: true }).then(async () => {
             id: initialScenario.id, 
             title: initialScenario.title
         });
+        for (const delta of initialDeltas) {
+            await Delta.create({
+                scenarioId: scenario.id, 
+                type: delta.type,
+                lineId: delta.lineId,
+                nextLineId: delta.nextLineId,
+                content: delta.content,
+                oldName: delta.oldName,
+                newName: delta.newName,
+                timestamp: delta.timestamp 
+            });
+        }
 
        
         const timestamp = Math.floor(Date.now() / 1000); 
@@ -418,7 +488,7 @@ sequelize.sync({ force: true }).then(async () => {
             }
         }
 
-        console.log("Baza je 'seed-ana' sa podacima I deltama.");
+        console.log("Baza je popunjena");
     } catch (error) {
         console.error("Greška pri ubacivanju podataka:", error);
     }
